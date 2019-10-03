@@ -1,4 +1,4 @@
-# MUMLife
+# MUMLife [![Build Status](https://travis-ci.com/jonathangetachew/MUMLife.svg?branch=develop)](https://travis-ci.com/jonathangetachew/MUMLife)
 
 An application to manage events and rentals for our Software Engineering course at Maharishi University of Management.
 Created Using JHipster v6.3.1.
