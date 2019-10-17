@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
@@ -46,7 +45,7 @@ public class DomainUserDetailsServiceIT {
     @BeforeEach
     public void init() {
         userOne = new User();
-        userOne.setLogin(USER_ONE_LOGIN);
+        userOne.setUsername(USER_ONE_LOGIN);
         userOne.setPassword(RandomStringUtils.random(60));
         userOne.setActivated(true);
         userOne.setEmail(USER_ONE_EMAIL);
@@ -56,7 +55,7 @@ public class DomainUserDetailsServiceIT {
         userRepository.save(userOne);
 
         userTwo = new User();
-        userTwo.setLogin(USER_TWO_LOGIN);
+        userTwo.setUsername(USER_TWO_LOGIN);
         userTwo.setPassword(RandomStringUtils.random(60));
         userTwo.setActivated(true);
         userTwo.setEmail(USER_TWO_EMAIL);
@@ -66,7 +65,7 @@ public class DomainUserDetailsServiceIT {
         userRepository.save(userTwo);
 
         userThree = new User();
-        userThree.setLogin(USER_THREE_LOGIN);
+        userThree.setUsername(USER_THREE_LOGIN);
         userThree.setPassword(RandomStringUtils.random(60));
         userThree.setActivated(false);
         userThree.setEmail(USER_THREE_EMAIL);
