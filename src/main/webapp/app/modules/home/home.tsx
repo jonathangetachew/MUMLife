@@ -18,9 +18,9 @@ export const Home = (props: IHomeProp) => {
       <Col md="9">
         <h2>Welcome, Java Hipster!</h2>
         <p className="lead">This is your homepage</p>
-        {account && account.login ? (
+        {account && account.username ? (
           <div>
-            <Alert color="success">You are logged in as user {account.login}.</Alert>
+            <Alert color="success">You are logged in as user {account.username}.</Alert>
           </div>
         ) : (
           <div>
@@ -31,8 +31,10 @@ export const Home = (props: IHomeProp) => {
                 sign in
               </Link>
               , you can try the default accounts:
-              <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;)
-              <br />- User (login=&quot;user&quot; and password=&quot;user&quot;).
+              <br />- Administrator (username=&quot;admin&quot; and password=&quot;admin&quot;)
+              <br />- Student (username=&quot;student&quot; and password=&quot;user&quot;)
+              <br />- Organizer (username=&quot;organizer&quot; and password=&quot;user&quot;)
+              <br />- Lender (username=&quot;lender&quot; and password=&quot;user&quot;).
             </Alert>
 
             <Alert color="warning">
