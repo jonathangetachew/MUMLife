@@ -1,0 +1,30 @@
+{
+    "name": "EventType",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "event",
+            "otherEntityRelationshipName": "eventType",
+            "relationshipName": "types",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191018153955",
+    "entityTableName": "event_type",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

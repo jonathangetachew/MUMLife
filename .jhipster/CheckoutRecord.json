@@ -1,0 +1,44 @@
+{
+    "name": "CheckoutRecord",
+    "fields": [
+        {
+            "fieldName": "dueDate",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "user",
+            "otherEntityRelationshipName": "checkoutRecord",
+            "relationshipName": "user",
+            "otherEntityField": "username"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "item",
+            "otherEntityRelationshipName": "checkoutRecord",
+            "relationshipName": "item",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191018153951",
+    "entityTableName": "checkout_record",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

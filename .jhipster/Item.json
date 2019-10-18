@@ -1,0 +1,68 @@
+{
+    "name": "Item",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "imageUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "ItemStatus",
+            "fieldValues": "RESERVED,AVAILABLE,UNAVAILABLE",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "otherEntityName": "itemType",
+            "otherEntityRelationshipName": "item",
+            "relationshipName": "type",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "reservationRecord",
+            "otherEntityRelationshipName": "item",
+            "relationshipName": "reservationRecord"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "checkoutRecord",
+            "otherEntityRelationshipName": "item",
+            "relationshipName": "checkoutRecord"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "ratingRecord",
+            "otherEntityRelationshipName": "item",
+            "relationshipName": "ratingRecord"
+        }
+    ],
+    "changelogDate": "20191018153949",
+    "entityTableName": "item",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

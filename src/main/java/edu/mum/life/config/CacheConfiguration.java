@@ -42,6 +42,19 @@ public class CacheConfiguration {
             createCache(cm, edu.mum.life.domain.User.class.getName());
             createCache(cm, edu.mum.life.domain.Authority.class.getName());
             createCache(cm, edu.mum.life.domain.User.class.getName() + ".authorities");
+            createCache(cm, edu.mum.life.domain.Item.class.getName());
+            createCache(cm, edu.mum.life.domain.Item.class.getName() + ".reservationRecords");
+            createCache(cm, edu.mum.life.domain.Item.class.getName() + ".checkoutRecords");
+            createCache(cm, edu.mum.life.domain.Item.class.getName() + ".ratingRecords");
+            createCache(cm, edu.mum.life.domain.ItemType.class.getName());
+            createCache(cm, edu.mum.life.domain.CheckoutRecord.class.getName());
+            createCache(cm, edu.mum.life.domain.ReservationRecord.class.getName());
+            createCache(cm, edu.mum.life.domain.RatingRecord.class.getName());
+            createCache(cm, edu.mum.life.domain.Event.class.getName());
+            createCache(cm, edu.mum.life.domain.Event.class.getName() + ".rSVPRecords");
+            createCache(cm, edu.mum.life.domain.Event.class.getName() + ".eventTypes");
+            createCache(cm, edu.mum.life.domain.EventType.class.getName());
+            createCache(cm, edu.mum.life.domain.RSVPRecord.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

@@ -1,0 +1,5 @@
+export const enum ItemStatus {
+  RESERVED = 'RESERVED',
+  AVAILABLE = 'AVAILABLE',
+  UNAVAILABLE = 'UNAVAILABLE'
+}

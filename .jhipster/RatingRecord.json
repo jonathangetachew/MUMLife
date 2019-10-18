@@ -1,0 +1,39 @@
+{
+    "name": "RatingRecord",
+    "fields": [
+        {
+            "fieldName": "rateValue",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "comment",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "any"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "user",
+            "otherEntityRelationshipName": "ratingRecord",
+            "relationshipName": "user",
+            "otherEntityField": "username"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "item",
+            "otherEntityRelationshipName": "ratingRecord",
+            "relationshipName": "item",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191018153953",
+    "entityTableName": "rating_record",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
