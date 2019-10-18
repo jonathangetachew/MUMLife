@@ -71,7 +71,7 @@ public class UserJWTControllerIT {
         userVM.setPassword("test");
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(user)))
+            .content(TestUtil.convertObjectToJsonBytes(userVM)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id_token").isString())
             .andExpect(jsonPath("$.id_token").isNotEmpty())
@@ -96,7 +96,7 @@ public class UserJWTControllerIT {
         userVM.setRememberMe(true);
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(user)))
+            .content(TestUtil.convertObjectToJsonBytes(userVM)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id_token").isString())
             .andExpect(jsonPath("$.id_token").isNotEmpty())
