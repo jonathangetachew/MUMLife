@@ -1,0 +1,45 @@
+{
+    "name": "RSVPRecord",
+    "fields": [
+        {
+            "fieldName": "createdAt",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "AttandanceStatus",
+            "fieldValues": "GOING,INTERESTED,IGNORED",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "user",
+            "otherEntityRelationshipName": "rSVPRecord",
+            "relationshipName": "user",
+            "otherEntityField": "username"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "event",
+            "otherEntityRelationshipName": "rSVPRecord",
+            "relationshipName": "event",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191018153956",
+    "entityTableName": "rsvp_record",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

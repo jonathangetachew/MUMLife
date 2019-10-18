@@ -1,0 +1,44 @@
+{
+    "name": "ReservationRecord",
+    "fields": [
+        {
+            "fieldName": "expirationDate",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "user",
+            "otherEntityRelationshipName": "reservationRecord",
+            "relationshipName": "user",
+            "otherEntityField": "username"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "item",
+            "otherEntityRelationshipName": "reservationRecord",
+            "relationshipName": "item",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191018153952",
+    "entityTableName": "reservation_record",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
