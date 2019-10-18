@@ -66,9 +66,9 @@ public class UserJWTControllerIT {
 
         userRepository.saveAndFlush(user);
 
-        UserVM user = new UserVM();
-        user.setUsername("user-jwt-controller");
-        user.setPassword("test");
+        UserVM userVM = new UserVM();
+        userVM.setUsername("user-jwt-controller");
+        userVM.setPassword("test");
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(user)))
@@ -90,10 +90,10 @@ public class UserJWTControllerIT {
 
         userRepository.saveAndFlush(user);
 
-        UserVM user = new UserVM();
-        user.setUsername("user-jwt-controller-remember-me");
-        user.setPassword("test");
-        user.setRememberMe(true);
+        UserVM userVM = new UserVM();
+        userVM.setUsername("user-jwt-controller-remember-me");
+        userVM.setPassword("test");
+        userVM.setRememberMe(true);
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(user)))
@@ -106,12 +106,12 @@ public class UserJWTControllerIT {
 
     @Test
     public void testAuthorizeFails() throws Exception {
-        UserVM user = new UserVM();
-        user.setUsername("wrong-user");
-        user.setPassword("wrong password");
+        UserVM userVM = new UserVM();
+        userVM.setUsername("wrong-user");
+        userVM.setPassword("wrong password");
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(user)))
+            .content(TestUtil.convertObjectToJsonBytes(userVM)))
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.id_token").doesNotExist())
             .andExpect(header().doesNotExist("Authorization"));
