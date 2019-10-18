@@ -105,7 +105,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return username;
     }
 
-    // Lowercase the login before saving it in database
+    // Lowercase the username before saving it in database
     public void setUsername(String username) {
         this.username = StringUtils.lowerCase(username, Locale.ENGLISH);
     }
@@ -217,7 +217,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-            "login='" + username + '\'' +
+            "username='" + username + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +

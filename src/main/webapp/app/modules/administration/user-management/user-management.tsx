@@ -64,8 +64,8 @@ export const UserManagement = (props: IUserManagementProps) => {
               ID
               <FontAwesomeIcon icon="sort" />
             </th>
-            <th className="hand" onClick={sort('login')}>
-              Login
+            <th className="hand" onClick={sort('username')}>
+              Username
               <FontAwesomeIcon icon="sort" />
             </th>
             <th className="hand" onClick={sort('email')}>
@@ -91,13 +91,13 @@ export const UserManagement = (props: IUserManagementProps) => {
         </thead>
         <tbody>
           {users.map((user, i) => (
-            <tr id={user.login} key={`user-${i}`}>
+            <tr id={user.username} key={`user-${i}`}>
               <td>
-                <Button tag={Link} to={`${match.url}/${user.login}`} color="link" size="sm">
+                <Button tag={Link} to={`${match.url}/${user.username}`} color="link" size="sm">
                   {user.id}
                 </Button>
               </td>
-              <td>{user.login}</td>
+              <td>{user.username}</td>
               <td>{user.email}</td>
               <td>
                 {user.activated ? (
@@ -128,18 +128,18 @@ export const UserManagement = (props: IUserManagementProps) => {
               </td>
               <td className="text-right">
                 <div className="btn-group flex-btn-group-container">
-                  <Button tag={Link} to={`${match.url}/${user.login}`} color="info" size="sm">
+                  <Button tag={Link} to={`${match.url}/${user.username}`} color="info" size="sm">
                     <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                   </Button>
-                  <Button tag={Link} to={`${match.url}/${user.login}/edit`} color="primary" size="sm">
+                  <Button tag={Link} to={`${match.url}/${user.username}/edit`} color="primary" size="sm">
                     <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                   </Button>
                   <Button
                     tag={Link}
-                    to={`${match.url}/${user.login}/delete`}
+                    to={`${match.url}/${user.username}/delete`}
                     color="danger"
                     size="sm"
-                    disabled={account.login === user.login}
+                    disabled={account.username === user.username}
                   >
                     <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                   </Button>

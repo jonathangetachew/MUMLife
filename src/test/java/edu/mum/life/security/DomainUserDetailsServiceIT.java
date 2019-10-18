@@ -25,11 +25,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @Transactional
 public class DomainUserDetailsServiceIT {
 
-    private static final String USER_ONE_LOGIN = "test-user-one";
+    private static final String USER_ONE_USERNAME = "test-user-one";
     private static final String USER_ONE_EMAIL = "test-user-one@localhost";
-    private static final String USER_TWO_LOGIN = "test-user-two";
+    private static final String USER_TWO_USERNAME = "test-user-two";
     private static final String USER_TWO_EMAIL = "test-user-two@localhost";
-    private static final String USER_THREE_LOGIN = "test-user-three";
+    private static final String USER_THREE_USERNAME = "test-user-three";
     private static final String USER_THREE_EMAIL = "test-user-three@localhost";
 
     @Autowired
@@ -45,7 +45,7 @@ public class DomainUserDetailsServiceIT {
     @BeforeEach
     public void init() {
         userOne = new User();
-        userOne.setUsername(USER_ONE_LOGIN);
+        userOne.setUsername(USER_ONE_USERNAME);
         userOne.setPassword(RandomStringUtils.random(60));
         userOne.setActivated(true);
         userOne.setEmail(USER_ONE_EMAIL);
@@ -55,7 +55,7 @@ public class DomainUserDetailsServiceIT {
         userRepository.save(userOne);
 
         userTwo = new User();
-        userTwo.setUsername(USER_TWO_LOGIN);
+        userTwo.setUsername(USER_TWO_USERNAME);
         userTwo.setPassword(RandomStringUtils.random(60));
         userTwo.setActivated(true);
         userTwo.setEmail(USER_TWO_EMAIL);
@@ -65,7 +65,7 @@ public class DomainUserDetailsServiceIT {
         userRepository.save(userTwo);
 
         userThree = new User();
-        userThree.setUsername(USER_THREE_LOGIN);
+        userThree.setUsername(USER_THREE_USERNAME);
         userThree.setPassword(RandomStringUtils.random(60));
         userThree.setActivated(false);
         userThree.setEmail(USER_THREE_EMAIL);
@@ -77,18 +77,18 @@ public class DomainUserDetailsServiceIT {
 
     @Test
     @Transactional
-    public void assertThatUserCanBeFoundByLogin() {
-        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_LOGIN);
+    public void assertThatUserCanBeFoundByUsername() {
+        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_USERNAME);
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
+        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_USERNAME);
     }
 
     @Test
     @Transactional
-    public void assertThatUserCanBeFoundByLoginIgnoreCase() {
-        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_LOGIN.toUpperCase(Locale.ENGLISH));
+    public void assertThatUserCanBeFoundByUsernameIgnoreCase() {
+        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_USERNAME.toUpperCase(Locale.ENGLISH));
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
+        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_USERNAME);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DomainUserDetailsServiceIT {
     public void assertThatUserCanBeFoundByEmail() {
         UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_TWO_EMAIL);
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_LOGIN);
+        assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_USERNAME);
     }
 
     @Test
@@ -104,22 +104,22 @@ public class DomainUserDetailsServiceIT {
     public void assertThatUserCanBeFoundByEmailIgnoreCase() {
         UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_TWO_EMAIL.toUpperCase(Locale.ENGLISH));
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_LOGIN);
+        assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_USERNAME);
     }
 
     @Test
     @Transactional
-    public void assertThatEmailIsPrioritizedOverLogin() {
+    public void assertThatEmailIsPrioritizedOverUsername() {
         UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_EMAIL);
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
+        assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_USERNAME);
     }
 
     @Test
     @Transactional
     public void assertThatUserNotActivatedExceptionIsThrownForNotActivatedUsers() {
         assertThatExceptionOfType(UserNotActivatedException.class).isThrownBy(
-            () -> domainUserDetailsService.loadUserByUsername(USER_THREE_LOGIN));
+            () -> domainUserDetailsService.loadUserByUsername(USER_THREE_USERNAME));
     }
 
 }

@@ -5,7 +5,7 @@ import edu.mum.life.domain.User;
 import edu.mum.life.repository.UserRepository;
 import edu.mum.life.security.jwt.TokenProvider;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
-import edu.mum.life.web.rest.vm.LoginVM;
+import edu.mum.life.web.rest.vm.UserVM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,12 +66,12 @@ public class UserJWTControllerIT {
 
         userRepository.saveAndFlush(user);
 
-        LoginVM login = new LoginVM();
-        login.setUsername("user-jwt-controller");
-        login.setPassword("test");
+        UserVM user = new UserVM();
+        user.setUsername("user-jwt-controller");
+        user.setPassword("test");
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(login)))
+            .content(TestUtil.convertObjectToJsonBytes(user)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id_token").isString())
             .andExpect(jsonPath("$.id_token").isNotEmpty())
@@ -90,13 +90,13 @@ public class UserJWTControllerIT {
 
         userRepository.saveAndFlush(user);
 
-        LoginVM login = new LoginVM();
-        login.setUsername("user-jwt-controller-remember-me");
-        login.setPassword("test");
-        login.setRememberMe(true);
+        UserVM user = new UserVM();
+        user.setUsername("user-jwt-controller-remember-me");
+        user.setPassword("test");
+        user.setRememberMe(true);
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(login)))
+            .content(TestUtil.convertObjectToJsonBytes(user)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id_token").isString())
             .andExpect(jsonPath("$.id_token").isNotEmpty())
@@ -106,12 +106,12 @@ public class UserJWTControllerIT {
 
     @Test
     public void testAuthorizeFails() throws Exception {
-        LoginVM login = new LoginVM();
-        login.setUsername("wrong-user");
-        login.setPassword("wrong password");
+        UserVM user = new UserVM();
+        user.setUsername("wrong-user");
+        user.setPassword("wrong password");
         mockMvc.perform(post("/api/authenticate")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(login)))
+            .content(TestUtil.convertObjectToJsonBytes(user)))
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.id_token").doesNotExist())
             .andExpect(header().doesNotExist("Authorization"));

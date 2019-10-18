@@ -176,7 +176,7 @@ public class AccountResourceIT {
 
     @Test
     @Transactional
-    public void testRegisterInvalidLogin() throws Exception {
+    public void testRegisterInvalidUsername() throws Exception {
         ManagedUserVM invalidUser = new ManagedUserVM();
         invalidUser.setUsername("funky-log!n");// <-- invalid
         invalidUser.setPassword("password");
@@ -272,7 +272,7 @@ public class AccountResourceIT {
 
     @Test
     @Transactional
-    public void testRegisterDuplicateLogin() throws Exception {
+    public void testRegisterDuplicateUsername() throws Exception {
         // First registration
         ManagedUserVM firstUser = new ManagedUserVM();
         firstUser.setUsername("alice");
@@ -284,7 +284,7 @@ public class AccountResourceIT {
         firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         firstUser.setAuthorities(Collections.singleton(AuthoritiesConstants.STUDENT));
 
-        // Duplicate login, different email
+        // Duplicate username, different email
         ManagedUserVM secondUser = new ManagedUserVM();
         secondUser.setUsername(firstUser.getUsername());
         secondUser.setPassword(firstUser.getPassword());
@@ -350,7 +350,7 @@ public class AccountResourceIT {
         Optional<User> testUser1 = userRepository.findOneByUsername("test-register-duplicate-email");
         assertThat(testUser1.isPresent()).isTrue();
 
-        // Duplicate email, different login
+        // Duplicate email, different username
         ManagedUserVM secondUser = new ManagedUserVM();
         secondUser.setUsername("test-register-duplicate-email-2");
         secondUser.setPassword(firstUser.getPassword());
@@ -573,11 +573,11 @@ public class AccountResourceIT {
 
     @Test
     @Transactional
-    @WithMockUser("save-existing-email-and-login")
-    public void testSaveExistingEmailAndLogin() throws Exception {
+    @WithMockUser("save-existing-email-and-username")
+    public void testSaveExistingEmailAndUsername() throws Exception {
         User user = new User();
-        user.setUsername("save-existing-email-and-login");
-        user.setEmail("save-existing-email-and-login@example.com");
+        user.setUsername("save-existing-email-and-username");
+        user.setEmail("save-existing-email-and-username@example.com");
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
 
@@ -587,7 +587,7 @@ public class AccountResourceIT {
         userDTO.setUsername("not-used");
         userDTO.setFirstName("firstname");
         userDTO.setLastName("lastname");
-        userDTO.setEmail("save-existing-email-and-login@example.com");
+        userDTO.setEmail("save-existing-email-and-username@example.com");
         userDTO.setActivated(false);
         userDTO.setImageUrl("http://placehold.it/50x50");
         userDTO.setLangKey(Constants.DEFAULT_LANGUAGE);
@@ -599,8 +599,8 @@ public class AccountResourceIT {
                 .content(TestUtil.convertObjectToJsonBytes(userDTO)))
             .andExpect(status().isOk());
 
-        User updatedUser = userRepository.findOneByUsername("save-existing-email-and-login").orElse(null);
-        assertThat(updatedUser.getEmail()).isEqualTo("save-existing-email-and-login@example.com");
+        User updatedUser = userRepository.findOneByUsername("save-existing-email-and-username").orElse(null);
+        assertThat(updatedUser.getEmail()).isEqualTo("save-existing-email-and-username@example.com");
     }
 
     @Test

@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SecurityUtilsUnitTest {
 
     @Test
-    public void testGetCurrentUserLogin() {
+    public void testGetCurrentUserUsername() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
         SecurityContextHolder.setContext(securityContext);
-        Optional<String> login = SecurityUtils.getCurrentUserUsername();
-        assertThat(login).contains("admin");
+        Optional<String> username = SecurityUtils.getCurrentUserUsername();
+        assertThat(username).contains("admin");
     }
 
     @Test

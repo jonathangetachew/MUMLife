@@ -32,25 +32,25 @@ public class DomainUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(final String login) {
-        log.debug("Authenticating {}", login);
+    public UserDetails loadUserByUsername(final String username) {
+        log.debug("Authenticating {}", username);
 
-        if (new EmailValidator().isValid(login, null)) {
-            return userRepository.findOneWithAuthoritiesByEmailIgnoreCase(login)
-                .map(user -> createSpringSecurityUser(login, user))
-                .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
+        if (new EmailValidator().isValid(username, null)) {
+            return userRepository.findOneWithAuthoritiesByEmailIgnoreCase(username)
+                .map(user -> createSpringSecurityUser(username, user))
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " was not found in the database"));
         }
 
-        String lowercaseLogin = login.toLowerCase(Locale.ENGLISH);
-        return userRepository.findOneWithAuthoritiesByUsername(lowercaseLogin)
-            .map(user -> createSpringSecurityUser(lowercaseLogin, user))
-            .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
+        String lowercaseUsername = username.toLowerCase(Locale.ENGLISH);
+        return userRepository.findOneWithAuthoritiesByUsername(lowercaseUsername)
+            .map(user -> createSpringSecurityUser(lowercaseUsername, user))
+            .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseUsername + " was not found in the database"));
 
     }
 
-    private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
+    private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseUsername, User user) {
         if (!user.getActivated()) {
-            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
+            throw new UserNotActivatedException("User " + lowercaseUsername + " was not activated");
         }
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
             .map(authority -> new SimpleGrantedAuthority(authority.getName()))
