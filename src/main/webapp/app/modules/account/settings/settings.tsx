@@ -32,7 +32,7 @@ export const SettingsPage = (props: IUserSettingsProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="settings-title">User settings for {props.account.login}</h2>
+          <h2 id="settings-title">User settings for {props.account.username}</h2>
           <AvForm id="settings-form" onValidSubmit={handleValidSubmit}>
             {/* First name */}
             <AvField

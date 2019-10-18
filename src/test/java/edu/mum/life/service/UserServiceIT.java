@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 @Transactional
 public class UserServiceIT {
 
-    private static final String DEFAULT_LOGIN = "johndoe";
+    private static final String DEFAULT_USERNAME = "johndoe";
 
     private static final String DEFAULT_EMAIL = "johndoe@localhost";
 
@@ -64,7 +64,7 @@ public class UserServiceIT {
     @BeforeEach
     public void init() {
         user = new User();
-        user.setUsername(DEFAULT_LOGIN);
+        user.setUsername(DEFAULT_USERNAME);
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
         user.setEmail(DEFAULT_EMAIL);

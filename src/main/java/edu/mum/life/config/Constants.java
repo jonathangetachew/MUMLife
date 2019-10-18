@@ -5,7 +5,7 @@ package edu.mum.life.config;
  */
 public final class Constants {
 
-    // Regex for acceptable logins
+    // Regex for acceptable usernames
     public static final String USERNAME_REGEX = "^[_.@A-Za-z0-9-]*$";
 
     public static final String SYSTEM_ACCOUNT = "system";
