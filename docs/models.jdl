@@ -1,0 +1,83 @@
+/**
+ * Represents an Item instance in the domain.
+ */
+entity Item {
+	id Long required unique
+	name String required
+    imageUrl String
+    status ItemStatus required
+    createdAt ZonedDateTime required
+}
+
+enum ItemStatus {
+	RESERVED, AVAILABLE, UNAVAILABLE
+}
+
+entity ItemType {
+	id Long required unique
+	name String required
+}
+
+entity CheckoutRecord {
+	active Boolean required
+	dueDate ZonedDateTime required
+    createdAt ZonedDateTime required
+}
+
+entity ReservationRecord {
+	expirationDate ZonedDateTime required
+    createdAt ZonedDateTime required
+}
+
+entity RatingRecord {
+	rateValue Integer
+    comment Blob
+}
+
+entity Event {
+	id Long required unique
+    name String required
+    description String required
+    posterUrlImage String
+    createdAt ZonedDateTime required
+    start ZonedDateTime required
+    end ZonedDateTime
+}
+
+entity EventType {
+	id Long required unique
+    name String required
+}
+
+entity RSVPRecord {
+    createdAt ZonedDateTime required
+	status RSVPType required
+}
+
+enum RSVPType {
+	GOING, INTERESTED, NONE
+}
+
+relationship OneToOne {    
+    Item{type} to ItemType
+}
+
+relationship ManyToOne {
+  ReservationRecord{user(username)} to User,
+  CheckoutRecord{user(username)} to User,
+  RatingRecord{user(username)} to User,
+  RSVPRecord{user(username)} to User
+}
+
+relationship OneToMany {
+    Item to ReservationRecord,
+    Item to CheckoutRecord,
+    Item to RatingRecord,
+    Event to RSVPRecord,
+    Event to EventType{types}
+}
+
+search Event, ReservationRecord, Item with elasticsearch
+service * with serviceImpl except EventType, ItemType, RatingRecord
+paginate Event, ReservationRecord with infinite-scroll
+paginate * with pagination except Event, ReservationRecord

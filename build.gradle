@@ -186,6 +186,8 @@ dependencies {
 
     // Use ", version: jhipster_dependencies_version, changing: true" if you want
     // to use a SNAPSHOT release instead of a stable release
+    // https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
+    implementation group: 'org.springframework.data', name: 'spring-data-elasticsearch'
     implementation group: "io.github.jhipster", name: "jhipster-framework"
     implementation "org.springframework.boot:spring-boot-starter-cache"
     implementation "io.dropwizard.metrics:metrics-core"
