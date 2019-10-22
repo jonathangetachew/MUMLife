@@ -5,10 +5,12 @@ import { Button, Row, Col } from 'reactstrap';
 import { ICrudGetAction, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './event.reducer';
 import { IEvent } from 'app/shared/model/event.model';
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 
 export interface IEventDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
@@ -18,7 +20,7 @@ export class EventDetail extends React.Component<IEventDetailProps> {
   }
 
   render() {
-    const { eventEntity } = this.props;
+    const { eventEntity, isEditable } = this.props;
     return (
       <Row>
         <Col md="8">
@@ -75,17 +77,19 @@ export class EventDetail extends React.Component<IEventDetailProps> {
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
           </Button>
           &nbsp;
-          <Button tag={Link} to={`/entity/event/${eventEntity.id}/edit`} replace color="primary">
+          { isEditable && <Button tag={Link} to={`/entity/event/${eventEntity.id}/edit`} replace color="primary">
             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
           </Button>
+          }
         </Col>
       </Row>
     );
   }
 }
 
-const mapStateToProps = ({ event }: IRootState) => ({
-  eventEntity: event.entity
+const mapStateToProps = ({ event, authentication }) => ({
+  eventEntity: event.entity,
+  isEditable: hasAnyAuthority(authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.ORGANIZER]),
 });
 
 const mapDispatchToProps = { getEntity };
