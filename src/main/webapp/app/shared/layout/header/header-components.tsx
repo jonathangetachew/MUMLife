@@ -4,19 +4,19 @@ import { NavItem, NavLink, NavbarBrand } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import appConfig from 'app/config/constants';
+import appConfig from './../../../config/constants';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
-    <img src="content/images/logo-jhipster.png" alt="Logo" />
+    {/* <img src="content/images/logo.svg" alt="Logo" /> */}
   </div>
 );
 
 export const Brand = props => (
   <NavbarBrand tag={Link} to="/" className="brand-logo">
     <BrandIcon />
-    <span className="brand-title">MUMLife</span>
-    <span className="navbar-version">{appConfig.VERSION}</span>
+    <span className="brand-title">MUM Life</span>
+    {/* <span className="navbar-version">{appConfig.VERSION}</span> */}
   </NavbarBrand>
 );
 
@@ -24,7 +24,7 @@ export const Home = props => (
   <NavItem>
     <NavLink tag={Link} to="/" className="d-flex align-items-center">
       <FontAwesomeIcon icon="home" />
-      <span>Home</span>
+      <span>&nbsp;Home</span>
     </NavLink>
   </NavItem>
 );
