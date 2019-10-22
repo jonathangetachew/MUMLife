@@ -40,7 +40,7 @@ export const Home = (props: IHomeProp) => {
           <div>
             <h2>Welcome to MUM Life!</h2>
             <p className="lead">A Platform to Discover Events and Rent Items in Maharishi University of Management.</p>
-            <Alert color="warning">
+            <Alert color="info">
               If you want to
               <Link to="/login" className="alert-link">
                 {' '}
@@ -53,7 +53,7 @@ export const Home = (props: IHomeProp) => {
               <br />- Lender (username=&quot;lender&quot; and password=&quot;user&quot;).
             </Alert>
 
-            <Alert color="warning">
+            <Alert color="info">
               You do not have an account yet?&nbsp;
               <Link to="/account/register" className="alert-link">
                 Register a new account
