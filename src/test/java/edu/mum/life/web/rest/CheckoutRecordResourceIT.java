@@ -42,6 +42,7 @@ public class CheckoutRecordResourceIT {
     private static final Boolean DEFAULT_ACTIVE = false;
     private static final Boolean UPDATED_ACTIVE = true;
 
+
     private static final ZonedDateTime DEFAULT_DUE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_DUE_DATE = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
     private static final ZonedDateTime SMALLER_DUE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(-1L), ZoneOffset.UTC);
@@ -79,6 +80,7 @@ public class CheckoutRecordResourceIT {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final CheckoutRecordResource checkoutRecordResource = new CheckoutRecordResource(checkoutRecordService);
+
         this.restCheckoutRecordMockMvc = MockMvcBuilders.standaloneSetup(checkoutRecordResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -279,6 +281,7 @@ public class CheckoutRecordResourceIT {
         List<CheckoutRecord> checkoutRecordList = checkoutRecordRepository.findAll();
         assertThat(checkoutRecordList).hasSize(databaseSizeBeforeUpdate);
         CheckoutRecord testCheckoutRecord = checkoutRecordList.get(checkoutRecordList.size() - 1);
+
         assertThat(testCheckoutRecord.isActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testCheckoutRecord.getDueDate()).isEqualTo(UPDATED_DUE_DATE);
         assertThat(testCheckoutRecord.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
