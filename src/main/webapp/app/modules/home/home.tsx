@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Row, Col, Alert } from 'reactstrap';
 
-import { IRootState } from 'app/shared/reducers';
+import { IRootState } from './../../shared/reducers';
+import Metrics from './../administration/metrics/metrics';
+import Event from './../../entities/event/index';
 
 export type IHomeProp = StateProps;
 
@@ -15,15 +17,29 @@ export const Home = (props: IHomeProp) => {
 
   return (
     <Row>
-      <Col md="9">
-        <h2>Welcome to MUM Life!</h2>
-        <p className="lead">A Platform to Discover Events and Rent Items in Maharishi University of Management.</p>
+      <Col md="10" style={{ margin: '0 auto'}}>
         {account && account.username ? (
           <div>
-            <Alert color="success">You are logged in as user {account.username}.</Alert>
+            <div style={{ textAlign: 'right' }}>
+              <Alert color="success">Welcom, {account.username}.</Alert>
+            </div>
+            { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
+              <Metrics />
+            ) : 
+              account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
+                <div>
+                  <Event match />
+                </div>
+              ) : account.authorities.indexOf('ROLE_ORGANIZER') > -1 ? (
+                    <h1>I&apos;m an organizer</h1>
+                  ) : account.authorities.indexOf('ROLE_LENDER') > -1 ? (
+                        <h1>I&apos;m a lender</h1>
+                      ) : ''}
           </div>
         ) : (
           <div>
+            <h2>Welcome to MUM Life!</h2>
+            <p className="lead">A Platform to Discover Events and Rent Items in Maharishi University of Management.</p>
             <Alert color="warning">
               If you want to
               <Link to="/login" className="alert-link">
@@ -43,12 +59,13 @@ export const Home = (props: IHomeProp) => {
                 Register a new account
               </Link>
             </Alert>
+            
           </div>
         )}
       </Col>
-      <Col md="3" className="pad">
+      {/* <Col md="3" className="pad">
         <span className="hipster rounded" />
-      </Col>
+      </Col> */}
     </Row>
   );
 };
