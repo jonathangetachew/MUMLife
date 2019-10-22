@@ -1,12 +1,12 @@
 import { Moment } from 'moment';
 import { IUser } from 'app/shared/model/user.model';
 import { IEvent } from 'app/shared/model/event.model';
-import { AttandanceStatus } from 'app/shared/model/enumerations/attandance-status.model';
+import { RSVPType } from 'app/shared/model/enumerations/rsvp-type.model';
 
 export interface IRSVPRecord {
   id?: number;
   createdAt?: Moment;
-  status?: AttandanceStatus;
+  status?: RSVPType;
   user?: IUser;
   event?: IEvent;
 }

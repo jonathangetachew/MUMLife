@@ -8,7 +8,8 @@ import { ItemStatus } from 'app/shared/model/enumerations/item-status.model';
 export interface IItem {
   id?: number;
   name?: string;
-  imageUrl?: string;
+  imageContentType?: string;
+  image?: any;
   status?: ItemStatus;
   createdAt?: Moment;
   type?: IItemType;

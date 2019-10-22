@@ -12,6 +12,7 @@ export const ACTION_TYPES = {
   CREATE_ITEM: 'item/CREATE_ITEM',
   UPDATE_ITEM: 'item/UPDATE_ITEM',
   DELETE_ITEM: 'item/DELETE_ITEM',
+  SET_BLOB: 'item/SET_BLOB',
   RESET: 'item/RESET'
 };
 
@@ -21,6 +22,7 @@ const initialState = {
   entities: [] as ReadonlyArray<IItem>,
   entity: defaultValue,
   updating: false,
+  totalItems: 0,
   updateSuccess: false
 };
 
@@ -63,7 +65,8 @@ export default (state: ItemState = initialState, action): ItemState => {
       return {
         ...state,
         loading: false,
-        entities: action.payload.data
+        entities: action.payload.data,
+        totalItems: parseInt(action.payload.headers['x-total-count'], 10)
       };
     case SUCCESS(ACTION_TYPES.FETCH_ITEM):
       return {
@@ -86,6 +89,17 @@ export default (state: ItemState = initialState, action): ItemState => {
         updateSuccess: true,
         entity: {}
       };
+    case ACTION_TYPES.SET_BLOB: {
+      const { name, data, contentType } = action.payload;
+      return {
+        ...state,
+        entity: {
+          ...state.entity,
+          [name]: data,
+          [name + 'ContentType']: contentType
+        }
+      };
+    }
     case ACTION_TYPES.RESET:
       return {
         ...initialState
@@ -99,10 +113,13 @@ const apiUrl = 'api/items';
 
 // Actions
 
-export const getEntities: ICrudGetAllAction<IItem> = (page, size, sort) => ({
-  type: ACTION_TYPES.FETCH_ITEM_LIST,
-  payload: axios.get<IItem>(`${apiUrl}?cacheBuster=${new Date().getTime()}`)
-});
+export const getEntities: ICrudGetAllAction<IItem> = (page, size, sort) => {
+  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}` : ''}`;
+  return {
+    type: ACTION_TYPES.FETCH_ITEM_LIST,
+    payload: axios.get<IItem>(`${requestUrl}${sort ? '&' : '?'}cacheBuster=${new Date().getTime()}`)
+  };
+};
 
 export const getEntity: ICrudGetAction<IItem> = id => {
   const requestUrl = `${apiUrl}/${id}`;
@@ -139,6 +156,15 @@ export const deleteEntity: ICrudDeleteAction<IItem> = id => async dispatch => {
   dispatch(getEntities());
   return result;
 };
+
+export const setBlob = (name, data, contentType?) => ({
+  type: ACTION_TYPES.SET_BLOB,
+  payload: {
+    name,
+    data,
+    contentType
+  }
+});
 
 export const reset = () => ({
   type: ACTION_TYPES.RESET

@@ -32,11 +32,11 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20191018153952",
+    "changelogDate": "20191022022412",
     "entityTableName": "reservation_record",
     "dto": "no",
-    "pagination": "no",
-    "service": "no",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "clientRootFolder": "",

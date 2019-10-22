@@ -6,7 +6,8 @@ export interface IEvent {
   id?: number;
   name?: string;
   description?: string;
-  posterUrlImage?: string;
+  posterImageContentType?: string;
+  posterImage?: any;
   createdAt?: Moment;
   start?: Moment;
   end?: Moment;

@@ -3,6 +3,7 @@ package edu.mum.life.web.rest;
 import edu.mum.life.MumLifeApp;
 import edu.mum.life.domain.CheckoutRecord;
 import edu.mum.life.repository.CheckoutRecordRepository;
+import edu.mum.life.service.CheckoutRecordService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = MumLifeApp.class)
 public class CheckoutRecordResourceIT {
 
+    private static final Boolean DEFAULT_ACTIVE = false;
+    private static final Boolean UPDATED_ACTIVE = true;
+
+
     private static final ZonedDateTime DEFAULT_DUE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_DUE_DATE = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
     private static final ZonedDateTime SMALLER_DUE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(-1L), ZoneOffset.UTC);
@@ -48,6 +53,9 @@ public class CheckoutRecordResourceIT {
 
     @Autowired
     private CheckoutRecordRepository checkoutRecordRepository;
+
+    @Autowired
+    private CheckoutRecordService checkoutRecordService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -71,7 +79,8 @@ public class CheckoutRecordResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CheckoutRecordResource checkoutRecordResource = new CheckoutRecordResource(checkoutRecordRepository);
+        final CheckoutRecordResource checkoutRecordResource = new CheckoutRecordResource(checkoutRecordService);
+
         this.restCheckoutRecordMockMvc = MockMvcBuilders.standaloneSetup(checkoutRecordResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -88,6 +97,7 @@ public class CheckoutRecordResourceIT {
      */
     public static CheckoutRecord createEntity(EntityManager em) {
         CheckoutRecord checkoutRecord = new CheckoutRecord()
+            .active(DEFAULT_ACTIVE)
             .dueDate(DEFAULT_DUE_DATE)
             .createdAt(DEFAULT_CREATED_AT);
         return checkoutRecord;
@@ -100,6 +110,7 @@ public class CheckoutRecordResourceIT {
      */
     public static CheckoutRecord createUpdatedEntity(EntityManager em) {
         CheckoutRecord checkoutRecord = new CheckoutRecord()
+            .active(UPDATED_ACTIVE)
             .dueDate(UPDATED_DUE_DATE)
             .createdAt(UPDATED_CREATED_AT);
         return checkoutRecord;
@@ -125,6 +136,7 @@ public class CheckoutRecordResourceIT {
         List<CheckoutRecord> checkoutRecordList = checkoutRecordRepository.findAll();
         assertThat(checkoutRecordList).hasSize(databaseSizeBeforeCreate + 1);
         CheckoutRecord testCheckoutRecord = checkoutRecordList.get(checkoutRecordList.size() - 1);
+        assertThat(testCheckoutRecord.isActive()).isEqualTo(DEFAULT_ACTIVE);
         assertThat(testCheckoutRecord.getDueDate()).isEqualTo(DEFAULT_DUE_DATE);
         assertThat(testCheckoutRecord.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
     }
@@ -148,6 +160,24 @@ public class CheckoutRecordResourceIT {
         assertThat(checkoutRecordList).hasSize(databaseSizeBeforeCreate);
     }
 
+
+    @Test
+    @Transactional
+    public void checkActiveIsRequired() throws Exception {
+        int databaseSizeBeforeTest = checkoutRecordRepository.findAll().size();
+        // set the field null
+        checkoutRecord.setActive(null);
+
+        // Create the CheckoutRecord, which fails.
+
+        restCheckoutRecordMockMvc.perform(post("/api/checkout-records")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(checkoutRecord)))
+            .andExpect(status().isBadRequest());
+
+        List<CheckoutRecord> checkoutRecordList = checkoutRecordRepository.findAll();
+        assertThat(checkoutRecordList).hasSize(databaseSizeBeforeTest);
+    }
 
     @Test
     @Transactional
@@ -196,6 +226,7 @@ public class CheckoutRecordResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(checkoutRecord.getId().intValue())))
+            .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
             .andExpect(jsonPath("$.[*].dueDate").value(hasItem(sameInstant(DEFAULT_DUE_DATE))))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))));
     }
@@ -211,6 +242,7 @@ public class CheckoutRecordResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(checkoutRecord.getId().intValue()))
+            .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE.booleanValue()))
             .andExpect(jsonPath("$.dueDate").value(sameInstant(DEFAULT_DUE_DATE)))
             .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)));
     }
@@ -227,7 +259,7 @@ public class CheckoutRecordResourceIT {
     @Transactional
     public void updateCheckoutRecord() throws Exception {
         // Initialize the database
-        checkoutRecordRepository.saveAndFlush(checkoutRecord);
+        checkoutRecordService.save(checkoutRecord);
 
         int databaseSizeBeforeUpdate = checkoutRecordRepository.findAll().size();
 
@@ -236,6 +268,7 @@ public class CheckoutRecordResourceIT {
         // Disconnect from session so that the updates on updatedCheckoutRecord are not directly saved in db
         em.detach(updatedCheckoutRecord);
         updatedCheckoutRecord
+            .active(UPDATED_ACTIVE)
             .dueDate(UPDATED_DUE_DATE)
             .createdAt(UPDATED_CREATED_AT);
 
@@ -248,6 +281,8 @@ public class CheckoutRecordResourceIT {
         List<CheckoutRecord> checkoutRecordList = checkoutRecordRepository.findAll();
         assertThat(checkoutRecordList).hasSize(databaseSizeBeforeUpdate);
         CheckoutRecord testCheckoutRecord = checkoutRecordList.get(checkoutRecordList.size() - 1);
+
+        assertThat(testCheckoutRecord.isActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testCheckoutRecord.getDueDate()).isEqualTo(UPDATED_DUE_DATE);
         assertThat(testCheckoutRecord.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
     }
@@ -274,7 +309,7 @@ public class CheckoutRecordResourceIT {
     @Transactional
     public void deleteCheckoutRecord() throws Exception {
         // Initialize the database
-        checkoutRecordRepository.saveAndFlush(checkoutRecord);
+        checkoutRecordService.save(checkoutRecord);
 
         int databaseSizeBeforeDelete = checkoutRecordRepository.findAll().size();
 

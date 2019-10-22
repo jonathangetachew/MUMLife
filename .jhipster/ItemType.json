@@ -10,10 +10,10 @@
         }
     ],
     "relationships": [],
-    "changelogDate": "20191018153950",
+    "changelogDate": "20191022022410",
     "entityTableName": "item_type",
     "dto": "no",
-    "pagination": "no",
+    "pagination": "pagination",
     "service": "no",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,

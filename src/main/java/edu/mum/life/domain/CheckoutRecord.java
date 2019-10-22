@@ -24,6 +24,10 @@ public class CheckoutRecord implements Serializable {
     private Long id;
 
     @NotNull
+    @Column(name = "active", nullable = false)
+    private Boolean active;
+
+    @NotNull
     @Column(name = "due_date", nullable = false)
     private ZonedDateTime dueDate;
 
@@ -46,6 +50,19 @@ public class CheckoutRecord implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean isActive() {
+        return active;
+    }
+
+    public CheckoutRecord active(Boolean active) {
+        this.active = active;
+        return this;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public ZonedDateTime getDueDate() {
@@ -121,6 +138,7 @@ public class CheckoutRecord implements Serializable {
     public String toString() {
         return "CheckoutRecord{" +
             "id=" + getId() +
+            ", active='" + isActive() + "'" +
             ", dueDate='" + getDueDate() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";

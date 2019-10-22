@@ -3,6 +3,7 @@ package edu.mum.life.web.rest;
 import edu.mum.life.MumLifeApp;
 import edu.mum.life.domain.RSVPRecord;
 import edu.mum.life.repository.RSVPRecordRepository;
+import edu.mum.life.service.RSVPRecordService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import edu.mum.life.domain.enumeration.AttandanceStatus;
+import edu.mum.life.domain.enumeration.RSVPType;
 /**
  * Integration tests for the {@link RSVPRecordResource} REST controller.
  */
@@ -43,11 +44,14 @@ public class RSVPRecordResourceIT {
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
     private static final ZonedDateTime SMALLER_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(-1L), ZoneOffset.UTC);
 
-    private static final AttandanceStatus DEFAULT_STATUS = AttandanceStatus.GOING;
-    private static final AttandanceStatus UPDATED_STATUS = AttandanceStatus.INTERESTED;
+    private static final RSVPType DEFAULT_STATUS = RSVPType.GOING;
+    private static final RSVPType UPDATED_STATUS = RSVPType.INTERESTED;
 
     @Autowired
     private RSVPRecordRepository rSVPRecordRepository;
+
+    @Autowired
+    private RSVPRecordService rSVPRecordService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -71,7 +75,7 @@ public class RSVPRecordResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final RSVPRecordResource rSVPRecordResource = new RSVPRecordResource(rSVPRecordRepository);
+        final RSVPRecordResource rSVPRecordResource = new RSVPRecordResource(rSVPRecordService);
         this.restRSVPRecordMockMvc = MockMvcBuilders.standaloneSetup(rSVPRecordResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -227,7 +231,7 @@ public class RSVPRecordResourceIT {
     @Transactional
     public void updateRSVPRecord() throws Exception {
         // Initialize the database
-        rSVPRecordRepository.saveAndFlush(rSVPRecord);
+        rSVPRecordService.save(rSVPRecord);
 
         int databaseSizeBeforeUpdate = rSVPRecordRepository.findAll().size();
 
@@ -274,7 +278,7 @@ public class RSVPRecordResourceIT {
     @Transactional
     public void deleteRSVPRecord() throws Exception {
         // Initialize the database
-        rSVPRecordRepository.saveAndFlush(rSVPRecord);
+        rSVPRecordService.save(rSVPRecord);
 
         int databaseSizeBeforeDelete = rSVPRecordRepository.findAll().size();
 

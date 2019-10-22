@@ -2,23 +2,52 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
+import { ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities } from './checkout-record.reducer';
 import { ICheckoutRecord } from 'app/shared/model/checkout-record.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
 export interface ICheckoutRecordProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
-export class CheckoutRecord extends React.Component<ICheckoutRecordProps> {
+export type ICheckoutRecordState = IPaginationBaseState;
+
+export class CheckoutRecord extends React.Component<ICheckoutRecordProps, ICheckoutRecordState> {
+  state: ICheckoutRecordState = {
+    ...getSortState(this.props.location, ITEMS_PER_PAGE)
+  };
+
   componentDidMount() {
-    this.props.getEntities();
+    this.getEntities();
   }
 
+  sort = prop => () => {
+    this.setState(
+      {
+        order: this.state.order === 'asc' ? 'desc' : 'asc',
+        sort: prop
+      },
+      () => this.sortEntities()
+    );
+  };
+
+  sortEntities() {
+    this.getEntities();
+    this.props.history.push(`${this.props.location.pathname}?page=${this.state.activePage}&sort=${this.state.sort},${this.state.order}`);
+  }
+
+  handlePagination = activePage => this.setState({ activePage }, () => this.sortEntities());
+
+  getEntities = () => {
+    const { activePage, itemsPerPage, sort, order } = this.state;
+    this.props.getEntities(activePage - 1, itemsPerPage, `${sort},${order}`);
+  };
+
   render() {
-    const { checkoutRecordList, match } = this.props;
+    const { checkoutRecordList, match, totalItems } = this.props;
     return (
       <div>
         <h2 id="checkout-record-heading">
@@ -33,11 +62,24 @@ export class CheckoutRecord extends React.Component<ICheckoutRecordProps> {
             <Table responsive aria-describedby="checkout-record-heading">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Due Date</th>
-                  <th>Created At</th>
-                  <th>User</th>
-                  <th>Item</th>
+                  <th className="hand" onClick={this.sort('id')}>
+                    ID <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('active')}>
+                    Active <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('dueDate')}>
+                    Due Date <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('createdAt')}>
+                    Created At <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    User <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    Item <FontAwesomeIcon icon="sort" />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -49,6 +91,7 @@ export class CheckoutRecord extends React.Component<ICheckoutRecordProps> {
                         {checkoutRecord.id}
                       </Button>
                     </td>
+                    <td>{checkoutRecord.active ? 'true' : 'false'}</td>
                     <td>
                       <TextFormat type="date" value={checkoutRecord.dueDate} format={APP_DATE_FORMAT} />
                     </td>
@@ -78,13 +121,28 @@ export class CheckoutRecord extends React.Component<ICheckoutRecordProps> {
             <div className="alert alert-warning">No Checkout Records found</div>
           )}
         </div>
+        <div className={checkoutRecordList && checkoutRecordList.length > 0 ? '' : 'd-none'}>
+          <Row className="justify-content-center">
+            <JhiItemCount page={this.state.activePage} total={totalItems} itemsPerPage={this.state.itemsPerPage} />
+          </Row>
+          <Row className="justify-content-center">
+            <JhiPagination
+              activePage={this.state.activePage}
+              onSelect={this.handlePagination}
+              maxButtons={5}
+              itemsPerPage={this.state.itemsPerPage}
+              totalItems={this.props.totalItems}
+            />
+          </Row>
+        </div>
       </div>
     );
   }
 }
 
 const mapStateToProps = ({ checkoutRecord }: IRootState) => ({
-  checkoutRecordList: checkoutRecord.entities
+  checkoutRecordList: checkoutRecord.entities,
+  totalItems: checkoutRecord.totalItems
 });
 
 const mapDispatchToProps = {

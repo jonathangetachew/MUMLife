@@ -1,14 +1,20 @@
 package edu.mum.life.web.rest;
 
 import edu.mum.life.domain.Event;
-import edu.mum.life.repository.EventRepository;
+import edu.mum.life.service.EventService;
 import edu.mum.life.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +39,10 @@ public class EventResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final EventRepository eventRepository;
+    private final EventService eventService;
 
-    public EventResource(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public EventResource(EventService eventService) {
+        this.eventService = eventService;
     }
 
     /**
@@ -52,7 +58,7 @@ public class EventResource {
         if (event.getId() != null) {
             throw new BadRequestAlertException("A new event cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Event result = eventRepository.save(event);
+        Event result = eventService.save(event);
         return ResponseEntity.created(new URI("/api/events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -73,7 +79,7 @@ public class EventResource {
         if (event.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Event result = eventRepository.save(event);
+        Event result = eventService.save(event);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, event.getId().toString()))
             .body(result);
@@ -83,12 +89,16 @@ public class EventResource {
      * {@code GET  /events} : get all the events.
      *
 
+     * @param pageable the pagination information.
+
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of events in body.
      */
     @GetMapping("/events")
-    public List<Event> getAllEvents() {
-        log.debug("REST request to get all Events");
-        return eventRepository.findAll();
+    public ResponseEntity<List<Event>> getAllEvents(Pageable pageable) {
+        log.debug("REST request to get a page of Events");
+        Page<Event> page = eventService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
@@ -100,7 +110,7 @@ public class EventResource {
     @GetMapping("/events/{id}")
     public ResponseEntity<Event> getEvent(@PathVariable Long id) {
         log.debug("REST request to get Event : {}", id);
-        Optional<Event> event = eventRepository.findById(id);
+        Optional<Event> event = eventService.findOne(id);
         return ResponseUtil.wrapOrNotFound(event);
     }
 
@@ -113,7 +123,7 @@ public class EventResource {
     @DeleteMapping("/events/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         log.debug("REST request to delete Event : {}", id);
-        eventRepository.deleteById(id);
+        eventService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

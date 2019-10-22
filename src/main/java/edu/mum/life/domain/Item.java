@@ -1,4 +1,5 @@
 package edu.mum.life.domain;
+import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -13,8 +14,9 @@ import java.util.Set;
 import edu.mum.life.domain.enumeration.ItemStatus;
 
 /**
- * A Item.
+ * Represents an Item instance in the domain.
  */
+@ApiModel(description = "Represents an Item instance in the domain.")
 @Entity
 @Table(name = "item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -30,8 +32,13 @@ public class Item implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    
+    @Lob
+    @Column(name = "image", nullable = false)
+    private byte[] image;
+
+    @Column(name = "image_content_type", nullable = false)
+    private String imageContentType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -80,17 +87,30 @@ public class Item implements Serializable {
         this.name = name;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public byte[] getImage() {
+        return image;
     }
 
-    public Item imageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public Item image(byte[] image) {
+        this.image = image;
         return this;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageContentType() {
+        return imageContentType;
+    }
+
+    public Item imageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+        return this;
+    }
+
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
     }
 
     public ItemStatus getStatus() {
@@ -229,7 +249,8 @@ public class Item implements Serializable {
         return "Item{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", imageUrl='" + getImageUrl() + "'" +
+            ", image='" + getImage() + "'" +
+            ", imageContentType='" + getImageContentType() + "'" +
             ", status='" + getStatus() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";

@@ -10,8 +10,8 @@
         },
         {
             "fieldName": "status",
-            "fieldType": "AttandanceStatus",
-            "fieldValues": "GOING,INTERESTED,IGNORED",
+            "fieldType": "RSVPType",
+            "fieldValues": "GOING,INTERESTED,NONE",
             "fieldValidateRules": [
                 "required"
             ]
@@ -33,11 +33,11 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20191018153956",
+    "changelogDate": "20191022022416",
     "entityTableName": "rsvp_record",
     "dto": "no",
-    "pagination": "no",
-    "service": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "clientRootFolder": "",

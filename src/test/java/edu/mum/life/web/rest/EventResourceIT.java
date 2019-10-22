@@ -3,6 +3,7 @@ package edu.mum.life.web.rest;
 import edu.mum.life.MumLifeApp;
 import edu.mum.life.domain.Event;
 import edu.mum.life.repository.EventRepository;
+import edu.mum.life.service.EventService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
@@ -44,8 +46,10 @@ public class EventResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final String DEFAULT_POSTER_URL_IMAGE = "AAAAAAAAAA";
-    private static final String UPDATED_POSTER_URL_IMAGE = "BBBBBBBBBB";
+    private static final byte[] DEFAULT_POSTER_IMAGE = TestUtil.createByteArray(1, "0");
+    private static final byte[] UPDATED_POSTER_IMAGE = TestUtil.createByteArray(1, "1");
+    private static final String DEFAULT_POSTER_IMAGE_CONTENT_TYPE = "image/jpg";
+    private static final String UPDATED_POSTER_IMAGE_CONTENT_TYPE = "image/png";
 
     private static final ZonedDateTime DEFAULT_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
@@ -61,6 +65,9 @@ public class EventResourceIT {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -84,7 +91,7 @@ public class EventResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final EventResource eventResource = new EventResource(eventRepository);
+        final EventResource eventResource = new EventResource(eventService);
         this.restEventMockMvc = MockMvcBuilders.standaloneSetup(eventResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -103,7 +110,8 @@ public class EventResourceIT {
         Event event = new Event()
             .name(DEFAULT_NAME)
             .description(DEFAULT_DESCRIPTION)
-            .posterUrlImage(DEFAULT_POSTER_URL_IMAGE)
+            .posterImage(DEFAULT_POSTER_IMAGE)
+            .posterImageContentType(DEFAULT_POSTER_IMAGE_CONTENT_TYPE)
             .createdAt(DEFAULT_CREATED_AT)
             .start(DEFAULT_START)
             .end(DEFAULT_END);
@@ -119,7 +127,8 @@ public class EventResourceIT {
         Event event = new Event()
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
-            .posterUrlImage(UPDATED_POSTER_URL_IMAGE)
+            .posterImage(UPDATED_POSTER_IMAGE)
+            .posterImageContentType(UPDATED_POSTER_IMAGE_CONTENT_TYPE)
             .createdAt(UPDATED_CREATED_AT)
             .start(UPDATED_START)
             .end(UPDATED_END);
@@ -148,7 +157,8 @@ public class EventResourceIT {
         Event testEvent = eventList.get(eventList.size() - 1);
         assertThat(testEvent.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testEvent.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testEvent.getPosterUrlImage()).isEqualTo(DEFAULT_POSTER_URL_IMAGE);
+        assertThat(testEvent.getPosterImage()).isEqualTo(DEFAULT_POSTER_IMAGE);
+        assertThat(testEvent.getPosterImageContentType()).isEqualTo(DEFAULT_POSTER_IMAGE_CONTENT_TYPE);
         assertThat(testEvent.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
         assertThat(testEvent.getStart()).isEqualTo(DEFAULT_START);
         assertThat(testEvent.getEnd()).isEqualTo(DEFAULT_END);
@@ -259,7 +269,8 @@ public class EventResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(event.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].posterUrlImage").value(hasItem(DEFAULT_POSTER_URL_IMAGE.toString())))
+            .andExpect(jsonPath("$.[*].posterImageContentType").value(hasItem(DEFAULT_POSTER_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].posterImage").value(hasItem(Base64Utils.encodeToString(DEFAULT_POSTER_IMAGE))))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))))
             .andExpect(jsonPath("$.[*].start").value(hasItem(sameInstant(DEFAULT_START))))
             .andExpect(jsonPath("$.[*].end").value(hasItem(sameInstant(DEFAULT_END))));
@@ -278,7 +289,8 @@ public class EventResourceIT {
             .andExpect(jsonPath("$.id").value(event.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
-            .andExpect(jsonPath("$.posterUrlImage").value(DEFAULT_POSTER_URL_IMAGE.toString()))
+            .andExpect(jsonPath("$.posterImageContentType").value(DEFAULT_POSTER_IMAGE_CONTENT_TYPE))
+            .andExpect(jsonPath("$.posterImage").value(Base64Utils.encodeToString(DEFAULT_POSTER_IMAGE)))
             .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)))
             .andExpect(jsonPath("$.start").value(sameInstant(DEFAULT_START)))
             .andExpect(jsonPath("$.end").value(sameInstant(DEFAULT_END)));
@@ -296,7 +308,7 @@ public class EventResourceIT {
     @Transactional
     public void updateEvent() throws Exception {
         // Initialize the database
-        eventRepository.saveAndFlush(event);
+        eventService.save(event);
 
         int databaseSizeBeforeUpdate = eventRepository.findAll().size();
 
@@ -307,7 +319,8 @@ public class EventResourceIT {
         updatedEvent
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
-            .posterUrlImage(UPDATED_POSTER_URL_IMAGE)
+            .posterImage(UPDATED_POSTER_IMAGE)
+            .posterImageContentType(UPDATED_POSTER_IMAGE_CONTENT_TYPE)
             .createdAt(UPDATED_CREATED_AT)
             .start(UPDATED_START)
             .end(UPDATED_END);
@@ -323,7 +336,8 @@ public class EventResourceIT {
         Event testEvent = eventList.get(eventList.size() - 1);
         assertThat(testEvent.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testEvent.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testEvent.getPosterUrlImage()).isEqualTo(UPDATED_POSTER_URL_IMAGE);
+        assertThat(testEvent.getPosterImage()).isEqualTo(UPDATED_POSTER_IMAGE);
+        assertThat(testEvent.getPosterImageContentType()).isEqualTo(UPDATED_POSTER_IMAGE_CONTENT_TYPE);
         assertThat(testEvent.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
         assertThat(testEvent.getStart()).isEqualTo(UPDATED_START);
         assertThat(testEvent.getEnd()).isEqualTo(UPDATED_END);
@@ -351,7 +365,7 @@ public class EventResourceIT {
     @Transactional
     public void deleteEvent() throws Exception {
         // Initialize the database
-        eventRepository.saveAndFlush(event);
+        eventService.save(event);
 
         int databaseSizeBeforeDelete = eventRepository.findAll().size();
 

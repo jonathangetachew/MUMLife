@@ -2,23 +2,61 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
+import {
+  openFile,
+  byteSize,
+  ICrudGetAllAction,
+  TextFormat,
+  getSortState,
+  IPaginationBaseState,
+  JhiPagination,
+  JhiItemCount
+} from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities } from './item.reducer';
 import { IItem } from 'app/shared/model/item.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
 export interface IItemProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
-export class Item extends React.Component<IItemProps> {
+export type IItemState = IPaginationBaseState;
+
+export class Item extends React.Component<IItemProps, IItemState> {
+  state: IItemState = {
+    ...getSortState(this.props.location, ITEMS_PER_PAGE)
+  };
+
   componentDidMount() {
-    this.props.getEntities();
+    this.getEntities();
   }
 
+  sort = prop => () => {
+    this.setState(
+      {
+        order: this.state.order === 'asc' ? 'desc' : 'asc',
+        sort: prop
+      },
+      () => this.sortEntities()
+    );
+  };
+
+  sortEntities() {
+    this.getEntities();
+    this.props.history.push(`${this.props.location.pathname}?page=${this.state.activePage}&sort=${this.state.sort},${this.state.order}`);
+  }
+
+  handlePagination = activePage => this.setState({ activePage }, () => this.sortEntities());
+
+  getEntities = () => {
+    const { activePage, itemsPerPage, sort, order } = this.state;
+    this.props.getEntities(activePage - 1, itemsPerPage, `${sort},${order}`);
+  };
+
   render() {
-    const { itemList, match } = this.props;
+    const { itemList, match, totalItems } = this.props;
     return (
       <div>
         <h2 id="item-heading">
@@ -33,12 +71,24 @@ export class Item extends React.Component<IItemProps> {
             <Table responsive aria-describedby="item-heading">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Image Url</th>
-                  <th>Status</th>
-                  <th>Created At</th>
-                  <th>Type</th>
+                  <th className="hand" onClick={this.sort('id')}>
+                    ID <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('name')}>
+                    Name <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('image')}>
+                    Image <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('status')}>
+                    Status <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('createdAt')}>
+                    Created At <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    Type <FontAwesomeIcon icon="sort" />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -51,7 +101,19 @@ export class Item extends React.Component<IItemProps> {
                       </Button>
                     </td>
                     <td>{item.name}</td>
-                    <td>{item.imageUrl}</td>
+                    <td>
+                      {item.image ? (
+                        <div>
+                          <a onClick={openFile(item.imageContentType, item.image)}>
+                            <img src={`data:${item.imageContentType};base64,${item.image}`} style={{ maxHeight: '30px' }} />
+                            &nbsp;
+                          </a>
+                          <span>
+                            {item.imageContentType}, {byteSize(item.image)}
+                          </span>
+                        </div>
+                      ) : null}
+                    </td>
                     <td>{item.status}</td>
                     <td>
                       <TextFormat type="date" value={item.createdAt} format={APP_DATE_FORMAT} />
@@ -78,13 +140,28 @@ export class Item extends React.Component<IItemProps> {
             <div className="alert alert-warning">No Items found</div>
           )}
         </div>
+        <div className={itemList && itemList.length > 0 ? '' : 'd-none'}>
+          <Row className="justify-content-center">
+            <JhiItemCount page={this.state.activePage} total={totalItems} itemsPerPage={this.state.itemsPerPage} />
+          </Row>
+          <Row className="justify-content-center">
+            <JhiPagination
+              activePage={this.state.activePage}
+              onSelect={this.handlePagination}
+              maxButtons={5}
+              itemsPerPage={this.state.itemsPerPage}
+              totalItems={this.props.totalItems}
+            />
+          </Row>
+        </div>
       </div>
     );
   }
 }
 
 const mapStateToProps = ({ item }: IRootState) => ({
-  itemList: item.entities
+  itemList: item.entities,
+  totalItems: item.totalItems
 });
 
 const mapDispatchToProps = {

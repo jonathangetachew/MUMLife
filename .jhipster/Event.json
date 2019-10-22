@@ -16,8 +16,12 @@
             ]
         },
         {
-            "fieldName": "posterUrlImage",
-            "fieldType": "String"
+            "fieldName": "posterImage",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image",
+            "fieldValidateRules": [
+                "required"
+            ]
         },
         {
             "fieldName": "createdAt",
@@ -52,11 +56,11 @@
             "relationshipName": "eventType"
         }
     ],
-    "changelogDate": "20191018153954",
+    "changelogDate": "20191022022414",
     "entityTableName": "event",
     "dto": "no",
-    "pagination": "no",
-    "service": "no",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "clientRootFolder": "",

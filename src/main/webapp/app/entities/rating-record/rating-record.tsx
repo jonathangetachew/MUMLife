@@ -2,23 +2,52 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { openFile, byteSize, ICrudGetAllAction } from 'react-jhipster';
+import { openFile, byteSize, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities } from './rating-record.reducer';
 import { IRatingRecord } from 'app/shared/model/rating-record.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
 export interface IRatingRecordProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
-export class RatingRecord extends React.Component<IRatingRecordProps> {
+export type IRatingRecordState = IPaginationBaseState;
+
+export class RatingRecord extends React.Component<IRatingRecordProps, IRatingRecordState> {
+  state: IRatingRecordState = {
+    ...getSortState(this.props.location, ITEMS_PER_PAGE)
+  };
+
   componentDidMount() {
-    this.props.getEntities();
+    this.getEntities();
   }
 
+  sort = prop => () => {
+    this.setState(
+      {
+        order: this.state.order === 'asc' ? 'desc' : 'asc',
+        sort: prop
+      },
+      () => this.sortEntities()
+    );
+  };
+
+  sortEntities() {
+    this.getEntities();
+    this.props.history.push(`${this.props.location.pathname}?page=${this.state.activePage}&sort=${this.state.sort},${this.state.order}`);
+  }
+
+  handlePagination = activePage => this.setState({ activePage }, () => this.sortEntities());
+
+  getEntities = () => {
+    const { activePage, itemsPerPage, sort, order } = this.state;
+    this.props.getEntities(activePage - 1, itemsPerPage, `${sort},${order}`);
+  };
+
   render() {
-    const { ratingRecordList, match } = this.props;
+    const { ratingRecordList, match, totalItems } = this.props;
     return (
       <div>
         <h2 id="rating-record-heading">
@@ -33,11 +62,21 @@ export class RatingRecord extends React.Component<IRatingRecordProps> {
             <Table responsive aria-describedby="rating-record-heading">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Rate Value</th>
-                  <th>Comment</th>
-                  <th>User</th>
-                  <th>Item</th>
+                  <th className="hand" onClick={this.sort('id')}>
+                    ID <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('rateValue')}>
+                    Rate Value <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('comment')}>
+                    Comment <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    User <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    Item <FontAwesomeIcon icon="sort" />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -83,13 +122,28 @@ export class RatingRecord extends React.Component<IRatingRecordProps> {
             <div className="alert alert-warning">No Rating Records found</div>
           )}
         </div>
+        <div className={ratingRecordList && ratingRecordList.length > 0 ? '' : 'd-none'}>
+          <Row className="justify-content-center">
+            <JhiItemCount page={this.state.activePage} total={totalItems} itemsPerPage={this.state.itemsPerPage} />
+          </Row>
+          <Row className="justify-content-center">
+            <JhiPagination
+              activePage={this.state.activePage}
+              onSelect={this.handlePagination}
+              maxButtons={5}
+              itemsPerPage={this.state.itemsPerPage}
+              totalItems={this.props.totalItems}
+            />
+          </Row>
+        </div>
       </div>
     );
   }
 }
 
 const mapStateToProps = ({ ratingRecord }: IRootState) => ({
-  ratingRecordList: ratingRecord.entities
+  ratingRecordList: ratingRecord.entities,
+  totalItems: ratingRecord.totalItems
 });
 
 const mapDispatchToProps = {

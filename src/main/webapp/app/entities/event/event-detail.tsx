@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { ICrudGetAction, TextFormat } from 'react-jhipster';
+import { ICrudGetAction, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
@@ -37,9 +37,23 @@ export class EventDetail extends React.Component<IEventDetailProps> {
             </dt>
             <dd>{eventEntity.description}</dd>
             <dt>
-              <span id="posterUrlImage">Poster Url Image</span>
+              <span id="posterImage">Poster Image</span>
             </dt>
-            <dd>{eventEntity.posterUrlImage}</dd>
+            <dd>
+              {eventEntity.posterImage ? (
+                <div>
+                  <a onClick={openFile(eventEntity.posterImageContentType, eventEntity.posterImage)}>
+                    <img
+                      src={`data:${eventEntity.posterImageContentType};base64,${eventEntity.posterImage}`}
+                      style={{ maxHeight: '30px' }}
+                    />
+                  </a>
+                  <span>
+                    {eventEntity.posterImageContentType}, {byteSize(eventEntity.posterImage)}
+                  </span>
+                </div>
+              ) : null}
+            </dd>
             <dt>
               <span id="createdAt">Created At</span>
             </dt>

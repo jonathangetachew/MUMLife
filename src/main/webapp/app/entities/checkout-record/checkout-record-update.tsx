@@ -98,6 +98,12 @@ export class CheckoutRecordUpdate extends React.Component<ICheckoutRecordUpdateP
                   </AvGroup>
                 ) : null}
                 <AvGroup>
+                  <Label id="activeLabel" check>
+                    <AvInput id="checkout-record-active" type="checkbox" className="form-control" name="active" />
+                    Active
+                  </Label>
+                </AvGroup>
+                <AvGroup>
                   <Label id="dueDateLabel" for="checkout-record-dueDate">
                     Due Date
                   </Label>

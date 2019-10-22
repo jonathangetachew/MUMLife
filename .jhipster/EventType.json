@@ -18,10 +18,10 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20191018153955",
+    "changelogDate": "20191022022415",
     "entityTableName": "event_type",
     "dto": "no",
-    "pagination": "no",
+    "pagination": "pagination",
     "service": "no",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,

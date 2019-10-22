@@ -27,10 +27,10 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20191018153953",
+    "changelogDate": "20191022022413",
     "entityTableName": "rating_record",
     "dto": "no",
-    "pagination": "no",
+    "pagination": "pagination",
     "service": "no",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,

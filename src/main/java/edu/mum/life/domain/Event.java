@@ -32,8 +32,13 @@ public class Event implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "poster_url_image")
-    private String posterUrlImage;
+    
+    @Lob
+    @Column(name = "poster_image", nullable = false)
+    private byte[] posterImage;
+
+    @Column(name = "poster_image_content_type", nullable = false)
+    private String posterImageContentType;
 
     @NotNull
     @Column(name = "created_at", nullable = false)
@@ -89,17 +94,30 @@ public class Event implements Serializable {
         this.description = description;
     }
 
-    public String getPosterUrlImage() {
-        return posterUrlImage;
+    public byte[] getPosterImage() {
+        return posterImage;
     }
 
-    public Event posterUrlImage(String posterUrlImage) {
-        this.posterUrlImage = posterUrlImage;
+    public Event posterImage(byte[] posterImage) {
+        this.posterImage = posterImage;
         return this;
     }
 
-    public void setPosterUrlImage(String posterUrlImage) {
-        this.posterUrlImage = posterUrlImage;
+    public void setPosterImage(byte[] posterImage) {
+        this.posterImage = posterImage;
+    }
+
+    public String getPosterImageContentType() {
+        return posterImageContentType;
+    }
+
+    public Event posterImageContentType(String posterImageContentType) {
+        this.posterImageContentType = posterImageContentType;
+        return this;
+    }
+
+    public void setPosterImageContentType(String posterImageContentType) {
+        this.posterImageContentType = posterImageContentType;
     }
 
     public ZonedDateTime getCreatedAt() {
@@ -214,7 +232,8 @@ public class Event implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", posterUrlImage='" + getPosterUrlImage() + "'" +
+            ", posterImage='" + getPosterImage() + "'" +
+            ", posterImageContentType='" + getPosterImageContentType() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             ", start='" + getStart() + "'" +
             ", end='" + getEnd() + "'" +

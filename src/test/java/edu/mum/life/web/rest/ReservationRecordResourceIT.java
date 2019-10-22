@@ -3,6 +3,7 @@ package edu.mum.life.web.rest;
 import edu.mum.life.MumLifeApp;
 import edu.mum.life.domain.ReservationRecord;
 import edu.mum.life.repository.ReservationRecordRepository;
+import edu.mum.life.service.ReservationRecordService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +51,9 @@ public class ReservationRecordResourceIT {
     private ReservationRecordRepository reservationRecordRepository;
 
     @Autowired
+    private ReservationRecordService reservationRecordService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -71,7 +75,7 @@ public class ReservationRecordResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final ReservationRecordResource reservationRecordResource = new ReservationRecordResource(reservationRecordRepository);
+        final ReservationRecordResource reservationRecordResource = new ReservationRecordResource(reservationRecordService);
         this.restReservationRecordMockMvc = MockMvcBuilders.standaloneSetup(reservationRecordResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -227,7 +231,7 @@ public class ReservationRecordResourceIT {
     @Transactional
     public void updateReservationRecord() throws Exception {
         // Initialize the database
-        reservationRecordRepository.saveAndFlush(reservationRecord);
+        reservationRecordService.save(reservationRecord);
 
         int databaseSizeBeforeUpdate = reservationRecordRepository.findAll().size();
 
@@ -274,7 +278,7 @@ public class ReservationRecordResourceIT {
     @Transactional
     public void deleteReservationRecord() throws Exception {
         // Initialize the database
-        reservationRecordRepository.saveAndFlush(reservationRecord);
+        reservationRecordService.save(reservationRecord);
 
         int databaseSizeBeforeDelete = reservationRecordRepository.findAll().size();
 
