@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState } from 'react-jhipster';
+import { openFile, byteSize, ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -94,8 +94,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
                     <th className="hand" onClick={this.sort('description')}>
                       Description <FontAwesomeIcon icon="sort" />
                     </th>
-                    <th className="hand" onClick={this.sort('posterUrlImage')}>
-                      Poster Url Image <FontAwesomeIcon icon="sort" />
+                    <th className="hand" onClick={this.sort('posterImage')}>
+                      Poster Image <FontAwesomeIcon icon="sort" />
                     </th>
                     <th className="hand" onClick={this.sort('createdAt')}>
                       Created At <FontAwesomeIcon icon="sort" />
@@ -119,7 +119,19 @@ export class Event extends React.Component<IEventProps, IEventState> {
                       </td>
                       <td>{event.name}</td>
                       <td>{event.description}</td>
-                      <td>{event.posterUrlImage}</td>
+                      <td>
+                        {event.posterImage ? (
+                          <div>
+                            <a onClick={openFile(event.posterImageContentType, event.posterImage)}>
+                              <img src={`data:${event.posterImageContentType};base64,${event.posterImage}`} style={{ maxHeight: '30px' }} />
+                              &nbsp;
+                            </a>
+                            <span>
+                              {event.posterImageContentType}, {byteSize(event.posterImage)}
+                            </span>
+                          </div>
+                        ) : null}
+                      </td>
                       <td>
                         <TextFormat type="date" value={event.createdAt} format={APP_DATE_FORMAT} />
                       </td>

@@ -22,8 +22,11 @@
             <column name="description" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="poster_url_image" type="varchar(255)">
-                <constraints nullable="true" />
+            <column name="poster_image" type="longblob">
+                <constraints nullable="false" />
+            </column>
+            <column name="poster_image_content_type" type="varchar(255)">
+                <constraints nullable="false" />
             </column>
             <column name="created_at" type="datetime">
                 <constraints nullable="false" />
@@ -62,7 +65,8 @@
             <column name="id" type="numeric"/>
             <column name="name" type="string"/>
             <column name="description" type="string"/>
-            <column name="poster_url_image" type="string"/>
+            <column name="poster_image" type="blob"/>
+            <column name="poster_image_content_type" type="string"/>
             <column name="created_at" type="datetime"/>
             <column name="start" type="datetime"/>
             <column name="end" type="datetime"/>

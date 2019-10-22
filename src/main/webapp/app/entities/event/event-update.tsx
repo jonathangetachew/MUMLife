@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { ICrudGetAction, ICrudGetAllAction, setFileData, openFile, byteSize, ICrudPutAction } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
-import { getEntity, updateEntity, createEntity, reset } from './event.reducer';
+import { getEntity, updateEntity, createEntity, setBlob, reset } from './event.reducer';
 import { IEvent } from 'app/shared/model/event.model';
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -38,6 +38,14 @@ export class EventUpdate extends React.Component<IEventUpdateProps, IEventUpdate
     }
   }
 
+  onBlobChange = (isAnImage, name) => event => {
+    setFileData(event, (contentType, data) => this.props.setBlob(name, data, contentType), isAnImage);
+  };
+
+  clearBlob = name => () => {
+    this.props.setBlob(name, undefined, undefined);
+  };
+
   saveEntity = (event, errors, values) => {
     values.createdAt = convertDateTimeToServer(values.createdAt);
     values.start = convertDateTimeToServer(values.start);
@@ -65,6 +73,8 @@ export class EventUpdate extends React.Component<IEventUpdateProps, IEventUpdate
   render() {
     const { eventEntity, loading, updating } = this.props;
     const { isNew } = this.state;
+
+    const { posterImage, posterImageContentType } = eventEntity;
 
     return (
       <div>
@@ -112,10 +122,41 @@ export class EventUpdate extends React.Component<IEventUpdateProps, IEventUpdate
                   />
                 </AvGroup>
                 <AvGroup>
-                  <Label id="posterUrlImageLabel" for="event-posterUrlImage">
-                    Poster Url Image
-                  </Label>
-                  <AvField id="event-posterUrlImage" type="text" name="posterUrlImage" />
+                  <AvGroup>
+                    <Label id="posterImageLabel" for="posterImage">
+                      Poster Image
+                    </Label>
+                    <br />
+                    {posterImage ? (
+                      <div>
+                        <a onClick={openFile(posterImageContentType, posterImage)}>
+                          <img src={`data:${posterImageContentType};base64,${posterImage}`} style={{ maxHeight: '100px' }} />
+                        </a>
+                        <br />
+                        <Row>
+                          <Col md="11">
+                            <span>
+                              {posterImageContentType}, {byteSize(posterImage)}
+                            </span>
+                          </Col>
+                          <Col md="1">
+                            <Button color="danger" onClick={this.clearBlob('posterImage')}>
+                              <FontAwesomeIcon icon="times-circle" />
+                            </Button>
+                          </Col>
+                        </Row>
+                      </div>
+                    ) : null}
+                    <input id="file_posterImage" type="file" onChange={this.onBlobChange(true, 'posterImage')} accept="image/*" />
+                    <AvInput
+                      type="hidden"
+                      name="posterImage"
+                      value={posterImage}
+                      validate={{
+                        required: { value: true, errorMessage: 'This field is required.' }
+                      }}
+                    />
+                  </AvGroup>
                 </AvGroup>
                 <AvGroup>
                   <Label id="createdAtLabel" for="event-createdAt">
@@ -191,6 +232,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 const mapDispatchToProps = {
   getEntity,
   updateEntity,
+  setBlob,
   createEntity,
   reset
 };

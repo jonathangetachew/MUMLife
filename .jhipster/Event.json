@@ -16,8 +16,12 @@
             ]
         },
         {
-            "fieldName": "posterUrlImage",
-            "fieldType": "String"
+            "fieldName": "posterImage",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image",
+            "fieldValidateRules": [
+                "required"
+            ]
         },
         {
             "fieldName": "createdAt",
