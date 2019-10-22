@@ -1,14 +1,20 @@
 package edu.mum.life.web.rest;
 
 import edu.mum.life.domain.ReservationRecord;
-import edu.mum.life.repository.ReservationRecordRepository;
+import edu.mum.life.service.ReservationRecordService;
 import edu.mum.life.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +39,10 @@ public class ReservationRecordResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final ReservationRecordRepository reservationRecordRepository;
+    private final ReservationRecordService reservationRecordService;
 
-    public ReservationRecordResource(ReservationRecordRepository reservationRecordRepository) {
-        this.reservationRecordRepository = reservationRecordRepository;
+    public ReservationRecordResource(ReservationRecordService reservationRecordService) {
+        this.reservationRecordService = reservationRecordService;
     }
 
     /**
@@ -52,7 +58,7 @@ public class ReservationRecordResource {
         if (reservationRecord.getId() != null) {
             throw new BadRequestAlertException("A new reservationRecord cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        ReservationRecord result = reservationRecordRepository.save(reservationRecord);
+        ReservationRecord result = reservationRecordService.save(reservationRecord);
         return ResponseEntity.created(new URI("/api/reservation-records/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -73,7 +79,7 @@ public class ReservationRecordResource {
         if (reservationRecord.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        ReservationRecord result = reservationRecordRepository.save(reservationRecord);
+        ReservationRecord result = reservationRecordService.save(reservationRecord);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, reservationRecord.getId().toString()))
             .body(result);
@@ -83,12 +89,16 @@ public class ReservationRecordResource {
      * {@code GET  /reservation-records} : get all the reservationRecords.
      *
 
+     * @param pageable the pagination information.
+
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of reservationRecords in body.
      */
     @GetMapping("/reservation-records")
-    public List<ReservationRecord> getAllReservationRecords() {
-        log.debug("REST request to get all ReservationRecords");
-        return reservationRecordRepository.findAll();
+    public ResponseEntity<List<ReservationRecord>> getAllReservationRecords(Pageable pageable) {
+        log.debug("REST request to get a page of ReservationRecords");
+        Page<ReservationRecord> page = reservationRecordService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
@@ -100,7 +110,7 @@ public class ReservationRecordResource {
     @GetMapping("/reservation-records/{id}")
     public ResponseEntity<ReservationRecord> getReservationRecord(@PathVariable Long id) {
         log.debug("REST request to get ReservationRecord : {}", id);
-        Optional<ReservationRecord> reservationRecord = reservationRecordRepository.findById(id);
+        Optional<ReservationRecord> reservationRecord = reservationRecordService.findOne(id);
         return ResponseUtil.wrapOrNotFound(reservationRecord);
     }
 
@@ -113,7 +123,7 @@ public class ReservationRecordResource {
     @DeleteMapping("/reservation-records/{id}")
     public ResponseEntity<Void> deleteReservationRecord(@PathVariable Long id) {
         log.debug("REST request to delete ReservationRecord : {}", id);
-        reservationRecordRepository.deleteById(id);
+        reservationRecordService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

@@ -1,21 +1,65 @@
 import React from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
+import { ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
-import { getEntities } from './event.reducer';
+import { getEntities, reset } from './event.reducer';
 import { IEvent } from 'app/shared/model/event.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
 export interface IEventProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
-export class Event extends React.Component<IEventProps> {
+export type IEventState = IPaginationBaseState;
+
+export class Event extends React.Component<IEventProps, IEventState> {
+  state: IEventState = {
+    ...getSortState(this.props.location, ITEMS_PER_PAGE)
+  };
+
   componentDidMount() {
-    this.props.getEntities();
+    this.reset();
   }
+
+  componentDidUpdate() {
+    if (this.props.updateSuccess) {
+      this.reset();
+    }
+  }
+
+  reset = () => {
+    this.props.reset();
+    this.setState({ activePage: 1 }, () => {
+      this.getEntities();
+    });
+  };
+
+  handleLoadMore = () => {
+    if (window.pageYOffset > 0) {
+      this.setState({ activePage: this.state.activePage + 1 }, () => this.getEntities());
+    }
+  };
+
+  sort = prop => () => {
+    this.setState(
+      {
+        order: this.state.order === 'asc' ? 'desc' : 'asc',
+        sort: prop
+      },
+      () => {
+        this.reset();
+      }
+    );
+  };
+
+  getEntities = () => {
+    const { activePage, itemsPerPage, sort, order } = this.state;
+    this.props.getEntities(activePage - 1, itemsPerPage, `${sort},${order}`);
+  };
 
   render() {
     const { eventList, match } = this.props;
@@ -29,60 +73,83 @@ export class Event extends React.Component<IEventProps> {
           </Link>
         </h2>
         <div className="table-responsive">
-          {eventList && eventList.length > 0 ? (
-            <Table responsive aria-describedby="event-heading">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Poster Url Image</th>
-                  <th>Created At</th>
-                  <th>Start</th>
-                  <th>End</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {eventList.map((event, i) => (
-                  <tr key={`entity-${i}`}>
-                    <td>
-                      <Button tag={Link} to={`${match.url}/${event.id}`} color="link" size="sm">
-                        {event.id}
-                      </Button>
-                    </td>
-                    <td>{event.name}</td>
-                    <td>{event.description}</td>
-                    <td>{event.posterUrlImage}</td>
-                    <td>
-                      <TextFormat type="date" value={event.createdAt} format={APP_DATE_FORMAT} />
-                    </td>
-                    <td>
-                      <TextFormat type="date" value={event.start} format={APP_DATE_FORMAT} />
-                    </td>
-                    <td>
-                      <TextFormat type="date" value={event.end} format={APP_DATE_FORMAT} />
-                    </td>
-                    <td className="text-right">
-                      <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`${match.url}/${event.id}`} color="info" size="sm">
-                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                        </Button>
-                        <Button tag={Link} to={`${match.url}/${event.id}/edit`} color="primary" size="sm">
-                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                        </Button>
-                        <Button tag={Link} to={`${match.url}/${event.id}/delete`} color="danger" size="sm">
-                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                        </Button>
-                      </div>
-                    </td>
+          <InfiniteScroll
+            pageStart={this.state.activePage}
+            loadMore={this.handleLoadMore}
+            hasMore={this.state.activePage - 1 < this.props.links.next}
+            loader={<div className="loader">Loading ...</div>}
+            threshold={0}
+            initialLoad={false}
+          >
+            {eventList && eventList.length > 0 ? (
+              <Table responsive aria-describedby="event-heading">
+                <thead>
+                  <tr>
+                    <th className="hand" onClick={this.sort('id')}>
+                      ID <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('name')}>
+                      Name <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('description')}>
+                      Description <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('posterUrlImage')}>
+                      Poster Url Image <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('createdAt')}>
+                      Created At <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('start')}>
+                      Start <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th className="hand" onClick={this.sort('end')}>
+                      End <FontAwesomeIcon icon="sort" />
+                    </th>
+                    <th />
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <div className="alert alert-warning">No Events found</div>
-          )}
+                </thead>
+                <tbody>
+                  {eventList.map((event, i) => (
+                    <tr key={`entity-${i}`}>
+                      <td>
+                        <Button tag={Link} to={`${match.url}/${event.id}`} color="link" size="sm">
+                          {event.id}
+                        </Button>
+                      </td>
+                      <td>{event.name}</td>
+                      <td>{event.description}</td>
+                      <td>{event.posterUrlImage}</td>
+                      <td>
+                        <TextFormat type="date" value={event.createdAt} format={APP_DATE_FORMAT} />
+                      </td>
+                      <td>
+                        <TextFormat type="date" value={event.start} format={APP_DATE_FORMAT} />
+                      </td>
+                      <td>
+                        <TextFormat type="date" value={event.end} format={APP_DATE_FORMAT} />
+                      </td>
+                      <td className="text-right">
+                        <div className="btn-group flex-btn-group-container">
+                          <Button tag={Link} to={`${match.url}/${event.id}`} color="info" size="sm">
+                            <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                          </Button>
+                          <Button tag={Link} to={`${match.url}/${event.id}/edit`} color="primary" size="sm">
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                          </Button>
+                          <Button tag={Link} to={`${match.url}/${event.id}/delete`} color="danger" size="sm">
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <div className="alert alert-warning">No Events found</div>
+            )}
+          </InfiniteScroll>
         </div>
       </div>
     );
@@ -90,11 +157,16 @@ export class Event extends React.Component<IEventProps> {
 }
 
 const mapStateToProps = ({ event }: IRootState) => ({
-  eventList: event.entities
+  eventList: event.entities,
+  totalItems: event.totalItems,
+  links: event.links,
+  entity: event.entity,
+  updateSuccess: event.updateSuccess
 });
 
 const mapDispatchToProps = {
-  getEntities
+  getEntities,
+  reset
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

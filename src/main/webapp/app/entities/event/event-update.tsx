@@ -33,9 +33,7 @@ export class EventUpdate extends React.Component<IEventUpdateProps, IEventUpdate
   }
 
   componentDidMount() {
-    if (this.state.isNew) {
-      this.props.reset();
-    } else {
+    if (!this.state.isNew) {
       this.props.getEntity(this.props.match.params.id);
     }
   }

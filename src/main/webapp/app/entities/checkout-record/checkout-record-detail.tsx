@@ -27,6 +27,10 @@ export class CheckoutRecordDetail extends React.Component<ICheckoutRecordDetailP
           </h2>
           <dl className="jh-entity-details">
             <dt>
+              <span id="active">Active</span>
+            </dt>
+            <dd>{checkoutRecordEntity.active ? 'true' : 'false'}</dd>
+            <dt>
               <span id="dueDate">Due Date</span>
             </dt>
             <dd>

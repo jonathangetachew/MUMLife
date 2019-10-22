@@ -1,14 +1,20 @@
 package edu.mum.life.web.rest;
 
 import edu.mum.life.domain.Item;
-import edu.mum.life.repository.ItemRepository;
+import edu.mum.life.service.ItemService;
 import edu.mum.life.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +39,10 @@ public class ItemResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final ItemRepository itemRepository;
+    private final ItemService itemService;
 
-    public ItemResource(ItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
+    public ItemResource(ItemService itemService) {
+        this.itemService = itemService;
     }
 
     /**
@@ -52,7 +58,7 @@ public class ItemResource {
         if (item.getId() != null) {
             throw new BadRequestAlertException("A new item cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Item result = itemRepository.save(item);
+        Item result = itemService.save(item);
         return ResponseEntity.created(new URI("/api/items/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -73,7 +79,7 @@ public class ItemResource {
         if (item.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Item result = itemRepository.save(item);
+        Item result = itemService.save(item);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, item.getId().toString()))
             .body(result);
@@ -83,12 +89,16 @@ public class ItemResource {
      * {@code GET  /items} : get all the items.
      *
 
+     * @param pageable the pagination information.
+
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of items in body.
      */
     @GetMapping("/items")
-    public List<Item> getAllItems() {
-        log.debug("REST request to get all Items");
-        return itemRepository.findAll();
+    public ResponseEntity<List<Item>> getAllItems(Pageable pageable) {
+        log.debug("REST request to get a page of Items");
+        Page<Item> page = itemService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
@@ -100,7 +110,7 @@ public class ItemResource {
     @GetMapping("/items/{id}")
     public ResponseEntity<Item> getItem(@PathVariable Long id) {
         log.debug("REST request to get Item : {}", id);
-        Optional<Item> item = itemRepository.findById(id);
+        Optional<Item> item = itemService.findOne(id);
         return ResponseUtil.wrapOrNotFound(item);
     }
 
@@ -113,7 +123,7 @@ public class ItemResource {
     @DeleteMapping("/items/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         log.debug("REST request to delete Item : {}", id);
-        itemRepository.deleteById(id);
+        itemService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

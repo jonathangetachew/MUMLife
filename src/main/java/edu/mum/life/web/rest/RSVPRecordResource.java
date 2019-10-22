@@ -1,14 +1,20 @@
 package edu.mum.life.web.rest;
 
 import edu.mum.life.domain.RSVPRecord;
-import edu.mum.life.repository.RSVPRecordRepository;
+import edu.mum.life.service.RSVPRecordService;
 import edu.mum.life.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +39,10 @@ public class RSVPRecordResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final RSVPRecordRepository rSVPRecordRepository;
+    private final RSVPRecordService rSVPRecordService;
 
-    public RSVPRecordResource(RSVPRecordRepository rSVPRecordRepository) {
-        this.rSVPRecordRepository = rSVPRecordRepository;
+    public RSVPRecordResource(RSVPRecordService rSVPRecordService) {
+        this.rSVPRecordService = rSVPRecordService;
     }
 
     /**
@@ -52,7 +58,7 @@ public class RSVPRecordResource {
         if (rSVPRecord.getId() != null) {
             throw new BadRequestAlertException("A new rSVPRecord cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        RSVPRecord result = rSVPRecordRepository.save(rSVPRecord);
+        RSVPRecord result = rSVPRecordService.save(rSVPRecord);
         return ResponseEntity.created(new URI("/api/rsvp-records/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -73,7 +79,7 @@ public class RSVPRecordResource {
         if (rSVPRecord.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        RSVPRecord result = rSVPRecordRepository.save(rSVPRecord);
+        RSVPRecord result = rSVPRecordService.save(rSVPRecord);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, rSVPRecord.getId().toString()))
             .body(result);
@@ -83,12 +89,16 @@ public class RSVPRecordResource {
      * {@code GET  /rsvp-records} : get all the rSVPRecords.
      *
 
+     * @param pageable the pagination information.
+
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of rSVPRecords in body.
      */
     @GetMapping("/rsvp-records")
-    public List<RSVPRecord> getAllRSVPRecords() {
-        log.debug("REST request to get all RSVPRecords");
-        return rSVPRecordRepository.findAll();
+    public ResponseEntity<List<RSVPRecord>> getAllRSVPRecords(Pageable pageable) {
+        log.debug("REST request to get a page of RSVPRecords");
+        Page<RSVPRecord> page = rSVPRecordService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
@@ -100,7 +110,7 @@ public class RSVPRecordResource {
     @GetMapping("/rsvp-records/{id}")
     public ResponseEntity<RSVPRecord> getRSVPRecord(@PathVariable Long id) {
         log.debug("REST request to get RSVPRecord : {}", id);
-        Optional<RSVPRecord> rSVPRecord = rSVPRecordRepository.findById(id);
+        Optional<RSVPRecord> rSVPRecord = rSVPRecordService.findOne(id);
         return ResponseUtil.wrapOrNotFound(rSVPRecord);
     }
 
@@ -113,7 +123,7 @@ public class RSVPRecordResource {
     @DeleteMapping("/rsvp-records/{id}")
     public ResponseEntity<Void> deleteRSVPRecord(@PathVariable Long id) {
         log.debug("REST request to delete RSVPRecord : {}", id);
-        rSVPRecordRepository.deleteById(id);
+        rSVPRecordService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

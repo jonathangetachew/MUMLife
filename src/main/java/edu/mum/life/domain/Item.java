@@ -1,4 +1,5 @@
 package edu.mum.life.domain;
+import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -13,8 +14,9 @@ import java.util.Set;
 import edu.mum.life.domain.enumeration.ItemStatus;
 
 /**
- * A Item.
+ * Represents an Item instance in the domain.
  */
+@ApiModel(description = "Represents an Item instance in the domain.")
 @Entity
 @Table(name = "item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

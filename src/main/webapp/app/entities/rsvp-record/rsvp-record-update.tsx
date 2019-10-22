@@ -125,7 +125,7 @@ export class RSVPRecordUpdate extends React.Component<IRSVPRecordUpdateProps, IR
                   >
                     <option value="GOING">GOING</option>
                     <option value="INTERESTED">INTERESTED</option>
-                    <option value="IGNORED">IGNORED</option>
+                    <option value="NONE">NONE</option>
                   </AvInput>
                 </AvGroup>
                 <AvGroup>

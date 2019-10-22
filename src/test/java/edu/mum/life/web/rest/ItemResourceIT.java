@@ -3,6 +3,7 @@ package edu.mum.life.web.rest;
 import edu.mum.life.MumLifeApp;
 import edu.mum.life.domain.Item;
 import edu.mum.life.repository.ItemRepository;
+import edu.mum.life.service.ItemService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +57,9 @@ public class ItemResourceIT {
     private ItemRepository itemRepository;
 
     @Autowired
+    private ItemService itemService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -77,7 +81,7 @@ public class ItemResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final ItemResource itemResource = new ItemResource(itemRepository);
+        final ItemResource itemResource = new ItemResource(itemService);
         this.restItemMockMvc = MockMvcBuilders.standaloneSetup(itemResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -261,7 +265,7 @@ public class ItemResourceIT {
     @Transactional
     public void updateItem() throws Exception {
         // Initialize the database
-        itemRepository.saveAndFlush(item);
+        itemService.save(item);
 
         int databaseSizeBeforeUpdate = itemRepository.findAll().size();
 
@@ -312,7 +316,7 @@ public class ItemResourceIT {
     @Transactional
     public void deleteItem() throws Exception {
         // Initialize the database
-        itemRepository.saveAndFlush(item);
+        itemService.save(item);
 
         int databaseSizeBeforeDelete = itemRepository.findAll().size();
 

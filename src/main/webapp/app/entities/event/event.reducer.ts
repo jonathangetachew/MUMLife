@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction, ICrudDeleteAction } from 'react-jhipster';
+import {
+  parseHeaderForLinks,
+  loadMoreDataWhenScrolled,
+  ICrudGetAction,
+  ICrudGetAllAction,
+  ICrudPutAction,
+  ICrudDeleteAction
+} from 'react-jhipster';
 
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
@@ -20,7 +27,9 @@ const initialState = {
   errorMessage: null,
   entities: [] as ReadonlyArray<IEvent>,
   entity: defaultValue,
+  links: { next: 0 },
   updating: false,
+  totalItems: 0,
   updateSuccess: false
 };
 
@@ -59,12 +68,17 @@ export default (state: EventState = initialState, action): EventState => {
         updateSuccess: false,
         errorMessage: action.payload
       };
-    case SUCCESS(ACTION_TYPES.FETCH_EVENT_LIST):
+    case SUCCESS(ACTION_TYPES.FETCH_EVENT_LIST): {
+      const links = parseHeaderForLinks(action.payload.headers.link);
+
       return {
         ...state,
         loading: false,
-        entities: action.payload.data
+        links,
+        entities: loadMoreDataWhenScrolled(state.entities, action.payload.data, links),
+        totalItems: parseInt(action.payload.headers['x-total-count'], 10)
       };
+    }
     case SUCCESS(ACTION_TYPES.FETCH_EVENT):
       return {
         ...state,
@@ -99,10 +113,13 @@ const apiUrl = 'api/events';
 
 // Actions
 
-export const getEntities: ICrudGetAllAction<IEvent> = (page, size, sort) => ({
-  type: ACTION_TYPES.FETCH_EVENT_LIST,
-  payload: axios.get<IEvent>(`${apiUrl}?cacheBuster=${new Date().getTime()}`)
-});
+export const getEntities: ICrudGetAllAction<IEvent> = (page, size, sort) => {
+  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}` : ''}`;
+  return {
+    type: ACTION_TYPES.FETCH_EVENT_LIST,
+    payload: axios.get<IEvent>(`${requestUrl}${sort ? '&' : '?'}cacheBuster=${new Date().getTime()}`)
+  };
+};
 
 export const getEntity: ICrudGetAction<IEvent> = id => {
   const requestUrl = `${apiUrl}/${id}`;
@@ -117,7 +134,6 @@ export const createEntity: ICrudPutAction<IEvent> = entity => async dispatch => 
     type: ACTION_TYPES.CREATE_EVENT,
     payload: axios.post(apiUrl, cleanEntity(entity))
   });
-  dispatch(getEntities());
   return result;
 };
 
@@ -126,7 +142,6 @@ export const updateEntity: ICrudPutAction<IEvent> = entity => async dispatch => 
     type: ACTION_TYPES.UPDATE_EVENT,
     payload: axios.put(apiUrl, cleanEntity(entity))
   });
-  dispatch(getEntities());
   return result;
 };
 
@@ -136,7 +151,6 @@ export const deleteEntity: ICrudDeleteAction<IEvent> = id => async dispatch => {
     type: ACTION_TYPES.DELETE_EVENT,
     payload: axios.delete(requestUrl)
   });
-  dispatch(getEntities());
   return result;
 };
 

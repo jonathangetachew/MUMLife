@@ -9,7 +9,7 @@ import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-import edu.mum.life.domain.enumeration.AttandanceStatus;
+import edu.mum.life.domain.enumeration.RSVPType;
 
 /**
  * A RSVPRecord.
@@ -32,7 +32,7 @@ public class RSVPRecord implements Serializable {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private AttandanceStatus status;
+    private RSVPType status;
 
     @ManyToOne
     @JsonIgnoreProperties("rSVPRecords")
@@ -64,16 +64,16 @@ public class RSVPRecord implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public AttandanceStatus getStatus() {
+    public RSVPType getStatus() {
         return status;
     }
 
-    public RSVPRecord status(AttandanceStatus status) {
+    public RSVPRecord status(RSVPType status) {
         this.status = status;
         return this;
     }
 
-    public void setStatus(AttandanceStatus status) {
+    public void setStatus(RSVPType status) {
         this.status = status;
     }
 

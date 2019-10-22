@@ -56,11 +56,12 @@
             "relationshipName": "ratingRecord"
         }
     ],
-    "changelogDate": "20191018153949",
+    "changelogDate": "20191022022409",
+    "javadoc": "Represents an Item instance in the domain.",
     "entityTableName": "item",
     "dto": "no",
-    "pagination": "no",
-    "service": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "clientRootFolder": "",

@@ -2,6 +2,13 @@
     "name": "CheckoutRecord",
     "fields": [
         {
+            "fieldName": "active",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
             "fieldName": "dueDate",
             "fieldType": "ZonedDateTime",
             "fieldValidateRules": [
@@ -32,11 +39,11 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20191018153951",
+    "changelogDate": "20191022022411",
     "entityTableName": "checkout_record",
     "dto": "no",
-    "pagination": "no",
-    "service": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "clientRootFolder": "",

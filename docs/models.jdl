@@ -1,3 +1,6 @@
+/**
+ * Represents an Item instance in the domain.
+ */
 entity Item {
 	id Long required unique
 	name String required
@@ -16,6 +19,7 @@ entity ItemType {
 }
 
 entity CheckoutRecord {
+	active Boolean required
 	dueDate ZonedDateTime required
     createdAt ZonedDateTime required
 }
@@ -47,11 +51,11 @@ entity EventType {
 
 entity RSVPRecord {
     createdAt ZonedDateTime required
-	status AttandanceStatus required
+	status RSVPType required
 }
 
-enum AttandanceStatus {
-	GOING, INTERESTED, IGNORED
+enum RSVPType {
+	GOING, INTERESTED, NONE
 }
 
 relationship OneToOne {    
@@ -72,3 +76,8 @@ relationship OneToMany {
     Event to RSVPRecord,
     Event to EventType{types}
 }
+
+#search Event, ReservationRecord, Item with elasticsearch
+service * with serviceImpl except EventType, ItemType, RatingRecord
+paginate Event, ReservationRecord with infinite-scroll
+paginate * with pagination except Event, ReservationRecord

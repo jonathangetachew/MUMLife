@@ -2,23 +2,52 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
+import { ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities } from './rsvp-record.reducer';
 import { IRSVPRecord } from 'app/shared/model/rsvp-record.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
 export interface IRSVPRecordProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
-export class RSVPRecord extends React.Component<IRSVPRecordProps> {
+export type IRSVPRecordState = IPaginationBaseState;
+
+export class RSVPRecord extends React.Component<IRSVPRecordProps, IRSVPRecordState> {
+  state: IRSVPRecordState = {
+    ...getSortState(this.props.location, ITEMS_PER_PAGE)
+  };
+
   componentDidMount() {
-    this.props.getEntities();
+    this.getEntities();
   }
 
+  sort = prop => () => {
+    this.setState(
+      {
+        order: this.state.order === 'asc' ? 'desc' : 'asc',
+        sort: prop
+      },
+      () => this.sortEntities()
+    );
+  };
+
+  sortEntities() {
+    this.getEntities();
+    this.props.history.push(`${this.props.location.pathname}?page=${this.state.activePage}&sort=${this.state.sort},${this.state.order}`);
+  }
+
+  handlePagination = activePage => this.setState({ activePage }, () => this.sortEntities());
+
+  getEntities = () => {
+    const { activePage, itemsPerPage, sort, order } = this.state;
+    this.props.getEntities(activePage - 1, itemsPerPage, `${sort},${order}`);
+  };
+
   render() {
-    const { rSVPRecordList, match } = this.props;
+    const { rSVPRecordList, match, totalItems } = this.props;
     return (
       <div>
         <h2 id="rsvp-record-heading">
@@ -33,11 +62,21 @@ export class RSVPRecord extends React.Component<IRSVPRecordProps> {
             <Table responsive aria-describedby="rsvp-record-heading">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Created At</th>
-                  <th>Status</th>
-                  <th>User</th>
-                  <th>Event</th>
+                  <th className="hand" onClick={this.sort('id')}>
+                    ID <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('createdAt')}>
+                    Created At <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('status')}>
+                    Status <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    User <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    Event <FontAwesomeIcon icon="sort" />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -76,13 +115,28 @@ export class RSVPRecord extends React.Component<IRSVPRecordProps> {
             <div className="alert alert-warning">No RSVP Records found</div>
           )}
         </div>
+        <div className={rSVPRecordList && rSVPRecordList.length > 0 ? '' : 'd-none'}>
+          <Row className="justify-content-center">
+            <JhiItemCount page={this.state.activePage} total={totalItems} itemsPerPage={this.state.itemsPerPage} />
+          </Row>
+          <Row className="justify-content-center">
+            <JhiPagination
+              activePage={this.state.activePage}
+              onSelect={this.handlePagination}
+              maxButtons={5}
+              itemsPerPage={this.state.itemsPerPage}
+              totalItems={this.props.totalItems}
+            />
+          </Row>
+        </div>
       </div>
     );
   }
 }
 
 const mapStateToProps = ({ rSVPRecord }: IRootState) => ({
-  rSVPRecordList: rSVPRecord.entities
+  rSVPRecordList: rSVPRecord.entities,
+  totalItems: rSVPRecord.totalItems
 });
 
 const mapDispatchToProps = {
