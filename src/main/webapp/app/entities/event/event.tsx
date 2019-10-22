@@ -10,6 +10,9 @@ import { getEntities } from './event.reducer';
 import { IEvent } from 'app/shared/model/event.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
+import { AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+
 export interface IEventProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
 export class Event extends React.Component<IEventProps> {
@@ -18,15 +21,15 @@ export class Event extends React.Component<IEventProps> {
   }
 
   render() {
-    const { eventList, match } = this.props;
+    const { eventList, match, isEditable } = this.props;
     return (
       <div>
         <h2 id="event-heading">
           Events
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+          { isEditable && <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Event
-          </Link>
+          </Link> }
         </h2>
         <div className="table-responsive">
           {eventList && eventList.length > 0 ? (
@@ -65,15 +68,15 @@ export class Event extends React.Component<IEventProps> {
                     </td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`${match.url}/${event.id}`} color="info" size="sm">
+                        <Button tag={Link} to={`/entity/event/${event.id}`} color="info" size="sm">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                         </Button>
-                        <Button tag={Link} to={`${match.url}/${event.id}/edit`} color="primary" size="sm">
+                        { isEditable && <Button tag={Link} to={`${match.url}/${event.id}/edit`} color="primary" size="sm">
                           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                        </Button>
-                        <Button tag={Link} to={`${match.url}/${event.id}/delete`} color="danger" size="sm">
+                        </Button>}
+                        { isEditable && <Button tag={Link} to={`${match.url}/${event.id}/delete`} color="danger" size="sm">
                           <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                        </Button>
+                        </Button>}
                       </div>
                     </td>
                   </tr>
@@ -89,8 +92,9 @@ export class Event extends React.Component<IEventProps> {
   }
 }
 
-const mapStateToProps = ({ event }: IRootState) => ({
-  eventList: event.entities
+const mapStateToProps = ({ event, authentication }) => ({
+  eventList: event.entities,
+  isEditable: hasAnyAuthority(authentication.account.authorities, [AUTHORITIES.ADMIN, AUTHORITIES.ORGANIZER]),
 });
 
 const mapDispatchToProps = {

@@ -8,7 +8,7 @@ import { Row, Col, Alert } from 'reactstrap';
 
 import { IRootState } from './../../shared/reducers';
 import Metrics from './../administration/metrics/metrics';
-import Event from './../../entities/event/index';
+import Event from './../../entities/event';
 
 export type IHomeProp = StateProps;
 
@@ -25,10 +25,10 @@ export const Home = (props: IHomeProp) => {
             </div>
             { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
               <Metrics />
-            ) : 
+            ) :
               account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
                 <div>
-                  <Event match />
+                  <Event match={{url:""}} />
                 </div>
               ) : account.authorities.indexOf('ROLE_ORGANIZER') > -1 ? (
                     <h1>I&apos;m an organizer</h1>
@@ -59,7 +59,7 @@ export const Home = (props: IHomeProp) => {
                 Register a new account
               </Link>
             </Alert>
-            
+
           </div>
         )}
       </Col>
