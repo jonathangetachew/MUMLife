@@ -1,11 +1,11 @@
-id;name;image_url;status;created_at
-1;mobile Fish;Home Loan Account Table Computer;RESERVED;2019-10-21T18:23:40
-2;Metal deposit;Producer;AVAILABLE;2019-10-21T11:35:02
-3;Home Loan Account;web-readiness;UNAVAILABLE;2019-10-21T16:48:24
-4;Gorgeous Frozen Pants;Common;UNAVAILABLE;2019-10-21T15:12:04
-5;HDD;Table Small Frozen Sausages Planner;AVAILABLE;2019-10-21T20:37:07
-6;Bahamian Dollar Investment Account;Games Regional Digitized;AVAILABLE;2019-10-21T21:24:46
-7;Georgia Industrial;connect Markets Chief;UNAVAILABLE;2019-10-21T12:42:46
-8;Aruba;software scale interactive;AVAILABLE;2019-10-21T19:46:46
-9;scalable;Small;AVAILABLE;2019-10-22T02:03:55
-10;magenta monitor 1080p;Unbranded Plastic Tuna Frozen;UNAVAILABLE;2019-10-21T17:30:13
+id;name;image;image_content_type;status;created_at
+1;mobile Fish;../fake-data/blob/hipster.png;image/png;RESERVED;2019-10-22T02:22:04
+2;FTP Savings Account;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-22T03:44:35
+3;Officer;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-21T17:23:42
+4;intangible;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-21T22:10:31
+5;Licensed Savings Account;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-22T02:38:49
+6;Credit Card Account Table Small Frozen Sausages;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-21T22:13:13
+7;Monitored Bahamian Dollar Investment Account;../fake-data/blob/hipster.png;image/png;AVAILABLE;2019-10-21T11:51:41
+8;hardware Costa Rica Mayotte;../fake-data/blob/hipster.png;image/png;RESERVED;2019-10-21T07:32:49
+9;Views e-enable Communications;../fake-data/blob/hipster.png;image/png;RESERVED;2019-10-22T02:40:34
+10;software scale interactive;../fake-data/blob/hipster.png;image/png;UNAVAILABLE;2019-10-21T21:08:16

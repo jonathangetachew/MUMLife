@@ -4,7 +4,7 @@
 entity Item {
 	id Long required unique
 	name String required
-    imageUrl String
+    image ImageBlob required,
     status ItemStatus required
     createdAt ZonedDateTime required
 }
@@ -38,7 +38,7 @@ entity Event {
 	id Long required unique
     name String required
     description String required
-    posterUrlImage String
+    posterImage ImageBlob required,
     createdAt ZonedDateTime required
     start ZonedDateTime required
     end ZonedDateTime

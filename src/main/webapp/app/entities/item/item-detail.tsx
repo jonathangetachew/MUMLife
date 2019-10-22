@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { ICrudGetAction, TextFormat } from 'react-jhipster';
+import { ICrudGetAction, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -31,9 +31,20 @@ export class ItemDetail extends React.Component<IItemDetailProps> {
             </dt>
             <dd>{itemEntity.name}</dd>
             <dt>
-              <span id="imageUrl">Image Url</span>
+              <span id="image">Image</span>
             </dt>
-            <dd>{itemEntity.imageUrl}</dd>
+            <dd>
+              {itemEntity.image ? (
+                <div>
+                  <a onClick={openFile(itemEntity.imageContentType, itemEntity.image)}>
+                    <img src={`data:${itemEntity.imageContentType};base64,${itemEntity.image}`} style={{ maxHeight: '30px' }} />
+                  </a>
+                  <span>
+                    {itemEntity.imageContentType}, {byteSize(itemEntity.image)}
+                  </span>
+                </div>
+              ) : null}
+            </dd>
             <dt>
               <span id="status">Status</span>
             </dt>

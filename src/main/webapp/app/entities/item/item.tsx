@@ -2,7 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import {
+  openFile,
+  byteSize,
+  ICrudGetAllAction,
+  TextFormat,
+  getSortState,
+  IPaginationBaseState,
+  JhiPagination,
+  JhiItemCount
+} from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -68,8 +77,8 @@ export class Item extends React.Component<IItemProps, IItemState> {
                   <th className="hand" onClick={this.sort('name')}>
                     Name <FontAwesomeIcon icon="sort" />
                   </th>
-                  <th className="hand" onClick={this.sort('imageUrl')}>
-                    Image Url <FontAwesomeIcon icon="sort" />
+                  <th className="hand" onClick={this.sort('image')}>
+                    Image <FontAwesomeIcon icon="sort" />
                   </th>
                   <th className="hand" onClick={this.sort('status')}>
                     Status <FontAwesomeIcon icon="sort" />
@@ -92,7 +101,19 @@ export class Item extends React.Component<IItemProps, IItemState> {
                       </Button>
                     </td>
                     <td>{item.name}</td>
-                    <td>{item.imageUrl}</td>
+                    <td>
+                      {item.image ? (
+                        <div>
+                          <a onClick={openFile(item.imageContentType, item.image)}>
+                            <img src={`data:${item.imageContentType};base64,${item.image}`} style={{ maxHeight: '30px' }} />
+                            &nbsp;
+                          </a>
+                          <span>
+                            {item.imageContentType}, {byteSize(item.image)}
+                          </span>
+                        </div>
+                      ) : null}
+                    </td>
                     <td>{item.status}</td>
                     <td>
                       <TextFormat type="date" value={item.createdAt} format={APP_DATE_FORMAT} />

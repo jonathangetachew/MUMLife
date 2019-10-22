@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { ICrudGetAction, ICrudGetAllAction, setFileData, openFile, byteSize, ICrudPutAction } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
 import { IItemType } from 'app/shared/model/item-type.model';
 import { getEntities as getItemTypes } from 'app/entities/item-type/item-type.reducer';
-import { getEntity, updateEntity, createEntity, reset } from './item.reducer';
+import { getEntity, updateEntity, createEntity, setBlob, reset } from './item.reducer';
 import { IItem } from 'app/shared/model/item.model';
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -46,6 +46,14 @@ export class ItemUpdate extends React.Component<IItemUpdateProps, IItemUpdateSta
     this.props.getItemTypes();
   }
 
+  onBlobChange = (isAnImage, name) => event => {
+    setFileData(event, (contentType, data) => this.props.setBlob(name, data, contentType), isAnImage);
+  };
+
+  clearBlob = name => () => {
+    this.props.setBlob(name, undefined, undefined);
+  };
+
   saveEntity = (event, errors, values) => {
     values.createdAt = convertDateTimeToServer(values.createdAt);
 
@@ -71,6 +79,8 @@ export class ItemUpdate extends React.Component<IItemUpdateProps, IItemUpdateSta
   render() {
     const { itemEntity, itemTypes, loading, updating } = this.props;
     const { isNew } = this.state;
+
+    const { image, imageContentType } = itemEntity;
 
     return (
       <div>
@@ -105,10 +115,41 @@ export class ItemUpdate extends React.Component<IItemUpdateProps, IItemUpdateSta
                   />
                 </AvGroup>
                 <AvGroup>
-                  <Label id="imageUrlLabel" for="item-imageUrl">
-                    Image Url
-                  </Label>
-                  <AvField id="item-imageUrl" type="text" name="imageUrl" />
+                  <AvGroup>
+                    <Label id="imageLabel" for="image">
+                      Image
+                    </Label>
+                    <br />
+                    {image ? (
+                      <div>
+                        <a onClick={openFile(imageContentType, image)}>
+                          <img src={`data:${imageContentType};base64,${image}`} style={{ maxHeight: '100px' }} />
+                        </a>
+                        <br />
+                        <Row>
+                          <Col md="11">
+                            <span>
+                              {imageContentType}, {byteSize(image)}
+                            </span>
+                          </Col>
+                          <Col md="1">
+                            <Button color="danger" onClick={this.clearBlob('image')}>
+                              <FontAwesomeIcon icon="times-circle" />
+                            </Button>
+                          </Col>
+                        </Row>
+                      </div>
+                    ) : null}
+                    <input id="file_image" type="file" onChange={this.onBlobChange(true, 'image')} accept="image/*" />
+                    <AvInput
+                      type="hidden"
+                      name="image"
+                      value={image}
+                      validate={{
+                        required: { value: true, errorMessage: 'This field is required.' }
+                      }}
+                    />
+                  </AvGroup>
                 </AvGroup>
                 <AvGroup>
                   <Label id="statusLabel" for="item-status">
@@ -186,6 +227,7 @@ const mapDispatchToProps = {
   getItemTypes,
   getEntity,
   updateEntity,
+  setBlob,
   createEntity,
   reset
 };

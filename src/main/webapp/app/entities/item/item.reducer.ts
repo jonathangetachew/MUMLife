@@ -12,6 +12,7 @@ export const ACTION_TYPES = {
   CREATE_ITEM: 'item/CREATE_ITEM',
   UPDATE_ITEM: 'item/UPDATE_ITEM',
   DELETE_ITEM: 'item/DELETE_ITEM',
+  SET_BLOB: 'item/SET_BLOB',
   RESET: 'item/RESET'
 };
 
@@ -88,6 +89,17 @@ export default (state: ItemState = initialState, action): ItemState => {
         updateSuccess: true,
         entity: {}
       };
+    case ACTION_TYPES.SET_BLOB: {
+      const { name, data, contentType } = action.payload;
+      return {
+        ...state,
+        entity: {
+          ...state.entity,
+          [name]: data,
+          [name + 'ContentType']: contentType
+        }
+      };
+    }
     case ACTION_TYPES.RESET:
       return {
         ...initialState
@@ -144,6 +156,15 @@ export const deleteEntity: ICrudDeleteAction<IItem> = id => async dispatch => {
   dispatch(getEntities());
   return result;
 };
+
+export const setBlob = (name, data, contentType?) => ({
+  type: ACTION_TYPES.SET_BLOB,
+  payload: {
+    name,
+    data,
+    contentType
+  }
+});
 
 export const reset = () => ({
   type: ACTION_TYPES.RESET
