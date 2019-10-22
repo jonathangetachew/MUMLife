@@ -23,9 +23,9 @@ export const RegisterPage = (props: IRegisterProps) => {
   const updatePassword = event => setPassword(event.target.value);
 
   return (
-    <div>
+    <div style={{ margin: '2rem 0' }}>
       <Row className="justify-content-center">
-        <Col md="8">
+        <Col md="8" style={{ margin: '1rem 0' }}>
           <h1 id="register-title">Registration</h1>
         </Col>
       </Row>
@@ -34,8 +34,7 @@ export const RegisterPage = (props: IRegisterProps) => {
           <AvForm id="register-form" onValidSubmit={handleValidSubmit}>
             <AvField
               name="username"
-              label="Username"
-              placeholder={'Your username'}
+              placeholder={'Username'}
               validate={{
                 required: { value: true, errorMessage: 'Your username is required.' },
                 pattern: { value: '^[_.@A-Za-z0-9-]*$', errorMessage: 'Your username can only contain letters and digits.' },
@@ -45,37 +44,34 @@ export const RegisterPage = (props: IRegisterProps) => {
             />
             <AvField
               name="email"
-              label="Email"
-              placeholder={'Your email'}
+              placeholder={'Email'}
               type="email"
               validate={{
-                required: { value: true, errorMessage: 'Your email is required.' },
-                minLength: { value: 5, errorMessage: 'Your email is required to be at least 5 characters.' },
-                maxLength: { value: 254, errorMessage: 'Your email cannot be longer than 50 characters.' }
+                required: { value: true, errorMessage: 'Email is required.' },
+                minLength: { value: 5, errorMessage: 'Email is required to be at least 5 characters.' },
+                maxLength: { value: 254, errorMessage: 'Email cannot be longer than 50 characters.' }
               }}
             />
             <AvField
               name="firstPassword"
-              label="New password"
-              placeholder={'New password'}
+              placeholder={'New Password'}
               type="password"
               onChange={updatePassword}
               validate={{
-                required: { value: true, errorMessage: 'Your password is required.' },
-                minLength: { value: 4, errorMessage: 'Your password is required to be at least 4 characters.' },
-                maxLength: { value: 50, errorMessage: 'Your password cannot be longer than 50 characters.' }
+                required: { value: true, errorMessage: 'Password is required.' },
+                minLength: { value: 4, errorMessage: 'Password is required to be at least 4 characters.' },
+                maxLength: { value: 50, errorMessage: 'Password cannot be longer than 50 characters.' }
               }}
             />
             <PasswordStrengthBar password={password} />
             <AvField
               name="secondPassword"
-              label="New password confirmation"
-              placeholder="Confirm the new password"
+              placeholder="Confirm Password"
               type="password"
               validate={{
-                required: { value: true, errorMessage: 'Your confirmation password is required.' },
-                minLength: { value: 4, errorMessage: 'Your confirmation password is required to be at least 4 characters.' },
-                maxLength: { value: 50, errorMessage: 'Your confirmation password cannot be longer than 50 characters.' },
+                required: { value: true, errorMessage: 'Confirmation password is required.' },
+                minLength: { value: 4, errorMessage: 'Confirmation password is required to be at least 4 characters.' },
+                maxLength: { value: 50, errorMessage: 'Confirmation password cannot be longer than 50 characters.' },
                 match: { value: 'firstPassword', errorMessage: 'The password and its confirmation do not match!' }
               }}
             />
@@ -83,16 +79,6 @@ export const RegisterPage = (props: IRegisterProps) => {
               Register
             </Button>
           </AvForm>
-          <p>&nbsp;</p>
-          <Alert color="warning">
-            <span>If you want to</span>
-            <a className="alert-link"> sign in</a>
-            <span>
-              , you can try the default accounts:
-              <br />- Administrator (username=&quot;admin&quot; and password=&quot;admin&quot;)
-              <br />- User (username=&quot;user&quot; and password=&quot;user&quot;).
-            </span>
-          </Alert>
         </Col>
       </Row>
     </div>
