@@ -21,7 +21,7 @@ export const Home = (props: IHomeProp) => {
         {account && account.username ? (
           <div>
             <div style={{ textAlign: 'right' }}>
-              <Alert color="success">Welcom, {account.username}.</Alert>
+              <Alert color="info">Welcom, {account.username}.</Alert>
             </div>
             { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
               <Metrics />
