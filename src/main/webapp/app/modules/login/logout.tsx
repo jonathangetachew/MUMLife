@@ -1,4 +1,7 @@
 import React from 'react';
+
+import Home from '../home/home';
+
 import { connect } from 'react-redux';
 
 import { IRootState } from 'app/shared/reducers';
@@ -24,9 +27,7 @@ export class Logout extends React.Component<ILogoutProps> {
     }
 
     return (
-      <div className="p-5">
-        <h4>Logged out successfully!</h4>
-      </div>
+      <Home />
     );
   }
 }
