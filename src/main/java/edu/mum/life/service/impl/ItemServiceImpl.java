@@ -1,5 +1,6 @@
 package edu.mum.life.service.impl;
 
+import edu.mum.life.domain.enumeration.ItemStatus;
 import edu.mum.life.service.ItemService;
 import edu.mum.life.domain.Item;
 import edu.mum.life.repository.ItemRepository;
@@ -53,6 +54,10 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findAll(pageable);
     }
 
+    @Override
+    public Page<Item> findAllAvailable(Pageable pageable) {
+        return itemRepository.findAllByStatus(ItemStatus.AVAILABLE, pageable);
+    }
 
     /**
      * Get one item by id.

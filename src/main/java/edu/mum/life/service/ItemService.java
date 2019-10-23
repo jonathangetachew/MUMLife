@@ -28,6 +28,14 @@ public interface ItemService {
      */
     Page<Item> findAll(Pageable pageable);
 
+    /**
+     *
+     * Get all Available items
+     *
+     * @param pageable
+     * @return
+     */
+    Page<Item> findAllAvailable(Pageable pageable);
 
     /**
      * Get the "id" item.
