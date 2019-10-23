@@ -56,6 +56,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Page<Item> findAllAvailable(Pageable pageable) {
+        log.debug("Request to get all Available Items");
         return itemRepository.findAllByStatus(ItemStatus.AVAILABLE, pageable);
     }
 
