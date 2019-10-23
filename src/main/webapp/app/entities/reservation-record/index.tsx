@@ -1,6 +1,9 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 
+import { AUTHORITIES } from 'app/config/constants';
+
+import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 
 import ReservationRecord from './reservation-record';
@@ -11,12 +14,12 @@ import ReservationRecordDeleteDialog from './reservation-record-delete-dialog';
 const Routes = ({ match }) => (
   <>
     <Switch>
-      <ErrorBoundaryRoute exact path={`${match.url}/new`} component={ReservationRecordUpdate} />
-      <ErrorBoundaryRoute exact path={`${match.url}/:id/edit`} component={ReservationRecordUpdate} />
+      <PrivateRoute exact path={`${match.url}/new`} component={ReservationRecordUpdate} hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.LENDER]} />
+      <PrivateRoute exact path={`${match.url}/:id/edit`} component={ReservationRecordUpdate} hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.LENDER]} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id`} component={ReservationRecordDetail} />
       <ErrorBoundaryRoute path={match.url} component={ReservationRecord} />
     </Switch>
-    <ErrorBoundaryRoute path={`${match.url}/:id/delete`} component={ReservationRecordDeleteDialog} />
+    <PrivateRoute path={`${match.url}/:id/delete`} component={ReservationRecordDeleteDialog} hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.LENDER]}/>
   </>
 );
 

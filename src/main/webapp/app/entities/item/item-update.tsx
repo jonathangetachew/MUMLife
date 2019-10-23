@@ -190,7 +190,7 @@ export class ItemUpdate extends React.Component<IItemUpdateProps, IItemUpdateSta
                     {itemTypes
                       ? itemTypes.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.name}
                           </option>
                         ))
                       : null}

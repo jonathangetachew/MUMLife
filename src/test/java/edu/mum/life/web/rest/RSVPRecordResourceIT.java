@@ -42,8 +42,6 @@ public class RSVPRecordResourceIT {
 
     private static final ZonedDateTime DEFAULT_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
-    private static final ZonedDateTime SMALLER_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(-1L), ZoneOffset.UTC);
-
     private static final RSVPType DEFAULT_STATUS = RSVPType.GOING;
     private static final RSVPType UPDATED_STATUS = RSVPType.INTERESTED;
 

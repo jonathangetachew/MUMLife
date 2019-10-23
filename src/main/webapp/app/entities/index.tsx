@@ -20,7 +20,7 @@ const Routes = ({ match }) => (
       {/* prettier-ignore */}
       <ErrorBoundaryRoute path={`${match.url}/item`} component={Item} />
       <ErrorBoundaryRoute path={`${match.url}/item-type`} component={ItemType} />
-      <ErrorBoundaryRoute path={`${match.url}/checkout-record`} component={CheckoutRecord} />
+      <ErrorBoundaryRoute path={`${match.url}/checkout-record`} component={CheckoutRecord} />      
       <ErrorBoundaryRoute path={`${match.url}/reservation-record`} component={ReservationRecord} />
       <ErrorBoundaryRoute path={`${match.url}/rating-record`} component={RatingRecord} />
       <ErrorBoundaryRoute path={`${match.url}/event`} component={Event} />
