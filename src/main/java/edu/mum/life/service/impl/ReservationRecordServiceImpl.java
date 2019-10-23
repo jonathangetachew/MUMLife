@@ -61,7 +61,9 @@ public class ReservationRecordServiceImpl implements ReservationRecordService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public List<ReservationRecord> findAllByCurrentUser() {
+        log.debug("Request to get all Reservation Records for Current User");
         return reservationRecordRepository.findByUserIsCurrentUser();
     }
 

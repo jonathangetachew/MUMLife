@@ -102,6 +102,7 @@ public class ReservationRecordResource {
 
         Page<ReservationRecord> page;
 
+        ///> Check if current user has admin / lender role the return all results, otherwise, return limited results.
         if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) ||
             SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.LENDER)) {
             page = reservationRecordService.findAll(pageable);
