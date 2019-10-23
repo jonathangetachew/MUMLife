@@ -5,6 +5,7 @@ import edu.mum.life.domain.ReservationRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +28,14 @@ public interface ReservationRecordService {
      * @return the list of entities.
      */
     Page<ReservationRecord> findAll(Pageable pageable);
+
+    /**
+     *
+     * Get Reserved Items by Current User
+     *
+     * @return
+     */
+    List<ReservationRecord> findAllByCurrentUser();
 
 
     /**
