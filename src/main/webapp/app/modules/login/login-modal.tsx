@@ -21,7 +21,7 @@ class LoginModal extends React.Component<ILoginModalProps> {
     const { loginError, handleClose } = this.props;
 
     return (
-      <Modal isOpen={this.props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
+      <Modal isOpen={this.props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false} style={{margin: '10rem auto'}}>
         <AvForm onSubmit={this.handleSubmit}>
           <ModalHeader id="login-title" toggle={handleClose}>
             Sign in
@@ -38,8 +38,7 @@ class LoginModal extends React.Component<ILoginModalProps> {
               <Col md="12">
                 <AvField
                   name="username"
-                  label="Username"
-                  placeholder="Your username"
+                  placeholder="Username"
                   required
                   errorMessage="Username cannot be empty!"
                   autoFocus
@@ -47,24 +46,23 @@ class LoginModal extends React.Component<ILoginModalProps> {
                 <AvField
                   name="password"
                   type="password"
-                  label="Password"
-                  placeholder="Your password"
+                  placeholder="Password"
                   required
                   errorMessage="Password cannot be empty!"
                 />
                 <AvGroup check inline>
                   <Label className="form-check-label">
                     <AvInput type="checkbox" name="rememberMe" /> Remember me
+                    <Link to="/account/reset/request" 
+                      style={{marginLeft: '10vw', transition: '0.5s', textAlign: 'right', fontWeight: 'normal', textDecoration: 'none'}}>
+                        Forget password?</Link>
                   </Label>
                 </AvGroup>
               </Col>
             </Row>
             <div className="mt-1">&nbsp;</div>
-            <Alert color="warning">
-              <Link to="/account/reset/request">Did you forget your password?</Link>
-            </Alert>
-            <Alert color="warning">
-              <span>You don&apos;t have an account yet?</span> <Link to="/account/register">Register a new account</Link>
+            <Alert color="info">
+              <span>New to MUM Life?</span> <Link to="/account/register" style={{fontWeight: 'normal'}}>Create an Account</Link>
             </Alert>
           </ModalBody>
           <ModalFooter>

@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SecurityUtilsUnitTest {
 
     @Test
-    public void testGetCurrentUserLogin() {
+    public void testGetCurrentUserUsername() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
         SecurityContextHolder.setContext(securityContext);
-        Optional<String> login = SecurityUtils.getCurrentUserLogin();
-        assertThat(login).contains("admin");
+        Optional<String> username = SecurityUtils.getCurrentUserUsername();
+        assertThat(username).contains("admin");
     }
 
     @Test
@@ -60,11 +60,11 @@ public class SecurityUtilsUnitTest {
     public void testIsCurrentUserInRole() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.USER));
+        authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.STUDENT));
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "user", authorities));
         SecurityContextHolder.setContext(securityContext);
 
-        assertThat(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.USER)).isTrue();
+        assertThat(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.STUDENT)).isTrue();
         assertThat(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)).isFalse();
     }
 

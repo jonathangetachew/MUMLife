@@ -2,7 +2,7 @@ package edu.mum.life.web.rest;
 
 import edu.mum.life.security.jwt.JWTFilter;
 import edu.mum.life.security.jwt.TokenProvider;
-import edu.mum.life.web.rest.vm.LoginVM;
+import edu.mum.life.web.rest.vm.UserVM;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -34,14 +34,14 @@ public class UserJWTController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
+    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody UserVM userVM) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginVM.getUsername(), loginVM.getPassword());
+            new UsernamePasswordAuthenticationToken(userVM.getUsername(), userVM.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        boolean rememberMe = (loginVM.isRememberMe() == null) ? false : loginVM.isRememberMe();
+        boolean rememberMe = (userVM.isRememberMe() == null) ? false : userVM.isRememberMe();
         String jwt = tokenProvider.createToken(authentication, rememberMe);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);

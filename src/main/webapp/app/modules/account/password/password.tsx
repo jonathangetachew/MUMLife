@@ -30,7 +30,7 @@ export const PasswordPage = (props: IUserPasswordProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="password-title">Password for {props.account.login}</h2>
+          <h2 id="password-title">Password for {props.account.username}</h2>
           <AvForm id="password-form" onValidSubmit={handleValidSubmit}>
             <AvField
               name="currentPassword"

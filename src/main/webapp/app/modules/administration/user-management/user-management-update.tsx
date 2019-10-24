@@ -9,16 +9,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getUser, getRoles, updateUser, createUser, reset } from './user-management.reducer';
 import { IRootState } from 'app/shared/reducers';
 
-export interface IUserManagementUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ login: string }> {}
+export interface IUserManagementUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ username: string }> {}
 
 export const UserManagementUpdate = (props: IUserManagementUpdateProps) => {
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.login);
+  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.username);
 
   useEffect(() => {
     if (isNew) {
       props.reset();
     } else {
-      props.getUser(props.match.params.login);
+      props.getUser(props.match.params.username);
     }
     props.getRoles();
     return () => props.reset();
@@ -60,11 +60,11 @@ export const UserManagementUpdate = (props: IUserManagementUpdateProps) => {
                 </AvGroup>
               ) : null}
               <AvGroup>
-                <Label for="login">Login</Label>
+                <Label for="username">Username</Label>
                 <AvField
                   type="text"
                   className="form-control"
-                  name="login"
+                  name="username"
                   validate={{
                     required: {
                       value: true,
@@ -83,7 +83,7 @@ export const UserManagementUpdate = (props: IUserManagementUpdateProps) => {
                       errorMessage: 'Your username cannot be longer than 50 characters.'
                     }
                   }}
-                  value={user.login}
+                  value={user.username}
                 />
               </AvGroup>
               <AvGroup>

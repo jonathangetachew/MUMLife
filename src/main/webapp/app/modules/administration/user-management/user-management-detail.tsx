@@ -10,11 +10,11 @@ import { APP_DATE_FORMAT } from 'app/config/constants';
 import { getUser } from './user-management.reducer';
 import { IRootState } from 'app/shared/reducers';
 
-export interface IUserManagementDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ login: string }> {}
+export interface IUserManagementDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ username: string }> {}
 
 export const UserManagementDetail = (props: IUserManagementDetailProps) => {
   useEffect(() => {
-    props.getUser(props.match.params.login);
+    props.getUser(props.match.params.username);
   }, []);
 
   const { user } = props;
@@ -22,13 +22,13 @@ export const UserManagementDetail = (props: IUserManagementDetailProps) => {
   return (
     <div>
       <h2>
-        User [<b>{user.login}</b>]
+        User [<b>{user.username}</b>]
       </h2>
       <Row size="md">
         <dl className="jh-entity-details">
-          <dt>Login</dt>
+          <dt>Username</dt>
           <dd>
-            <span>{user.login}</span>&nbsp;
+            <span>{user.username}</span>&nbsp;
             {user.activated ? <Badge color="success">Activated</Badge> : <Badge color="danger">Deactivated</Badge>}
           </dd>
           <dt>First Name</dt>
