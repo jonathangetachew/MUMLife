@@ -8,15 +8,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
 import { IUser } from 'app/shared/model/user.model';
-import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { getUsers, getUser } from 'app/modules/administration/user-management/user-management.reducer';
 import { IItem } from 'app/shared/model/item.model';
 import { getEntities as getItems } from 'app/entities/item/item.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './reservation-record.reducer';
 import { IReservationRecord } from 'app/shared/model/reservation-record.model';
 import { convertDateTimeFromServer, convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
+import moment from 'moment';
+import { hasAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
-export interface IReservationRecordUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
+export interface IReservationRecordUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string, item: string }> { }
 
 export interface IReservationRecordUpdateState {
   isNew: boolean;
@@ -30,7 +33,7 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
     this.state = {
       userId: '0',
       itemId: '0',
-      isNew: !this.props.match.params || !this.props.match.params.id
+      isNew: !this.props.match.params || !this.props.match.params.id || 'item' in this.props.match.params
     };
   }
 
@@ -73,14 +76,16 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
   };
 
   render() {
-    const { reservationRecordEntity, users, items, loading, updating } = this.props;
+    const { reservationRecordEntity, users, account, items, loading, updating, match } = this.props;
     const { isNew } = this.state;
+    const { item } = match && match.params ? match.params : undefined;
+    const isManager = hasAuthority([AUTHORITIES.ADMIN, AUTHORITIES.LENDER]);
 
     return (
       <div>
         <Row className="justify-content-center">
           <Col md="8">
-            <h2 id="mumLifeApp.reservationRecord.home.createOrEditLabel">Create or edit a ReservationRecord</h2>
+            <h2 id="mumLifeApp.reservationRecord.home.createOrEditLabel">{isNew ? 'Create' : 'Edit'} Reservation</h2>
           </Col>
         </Row>
         <Row className="justify-content-center">
@@ -88,83 +93,70 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
             {loading ? (
               <p>Loading...</p>
             ) : (
-              <AvForm model={isNew ? {} : reservationRecordEntity} onSubmit={this.saveEntity}>
-                {!isNew ? (
+                <AvForm model={isNew ? {} : reservationRecordEntity} onSubmit={this.saveEntity}>
+                  {!isNew ? (
+                    <AvGroup>
+                      <Label for="reservation-record-id">ID</Label>
+                      <AvInput id="reservation-record-id" type="text" className="form-control" name="id" required readOnly />
+                    </AvGroup>
+                  ) : null}
                   <AvGroup>
-                    <Label for="reservation-record-id">ID</Label>
-                    <AvInput id="reservation-record-id" type="text" className="form-control" name="id" required readOnly />
+                    <Label id="expirationDateLabel" for="reservation-record-expirationDate">
+                      Expiration Date
+                  </Label>
+                    <AvInput
+                      id="reservation-record-expirationDate"
+                      type="datetime-local"
+                      className="form-control"
+                      name="expirationDate"
+                      placeholder={'YYYY-MM-DD HH:mm'}
+                      value={isNew ? null : convertDateTimeFromServer(this.props.reservationRecordEntity.expirationDate)}
+                      validate={{
+                        required: { value: true, errorMessage: 'This field is required.' }
+                      }}
+                    />
                   </AvGroup>
-                ) : null}
-                <AvGroup>
-                  <Label id="expirationDateLabel" for="reservation-record-expirationDate">
-                    Expiration Date
-                  </Label>
-                  <AvInput
-                    id="reservation-record-expirationDate"
-                    type="datetime-local"
-                    className="form-control"
-                    name="expirationDate"
-                    placeholder={'YYYY-MM-DD HH:mm'}
-                    value={isNew ? null : convertDateTimeFromServer(this.props.reservationRecordEntity.expirationDate)}
-                    validate={{
-                      required: { value: true, errorMessage: 'This field is required.' }
-                    }}
-                  />
-                </AvGroup>
-                <AvGroup>
-                  <Label id="createdAtLabel" for="reservation-record-createdAt">
-                    Created At
-                  </Label>
-                  <AvInput
-                    id="reservation-record-createdAt"
-                    type="datetime-local"
-                    className="form-control"
-                    name="createdAt"
-                    placeholder={'YYYY-MM-DD HH:mm'}
-                    value={isNew ? null : convertDateTimeFromServer(this.props.reservationRecordEntity.createdAt)}
-                    validate={{
-                      required: { value: true, errorMessage: 'This field is required.' }
-                    }}
-                  />
-                </AvGroup>
-                <AvGroup>
-                  <Label for="reservation-record-user">User</Label>
-                  <AvInput id="reservation-record-user" type="select" className="form-control" name="user.id">
-                    <option value="" key="0" />
-                    {users
-                      ? users.map(otherEntity => (
+                  <AvGroup>
+                    <AvInput id="reservation-record-createdAt" type="hidden" name="createdAt" value={isNew ? convertDateTimeFromServer(moment.now()) : convertDateTimeFromServer(this.props.reservationRecordEntity.createdAt)} />
+                  </AvGroup>
+                  <AvGroup>
+                    {!item && <Label for="reservation-record-user">User</Label>}
+                    {(!item || isManager )? <AvInput id="reservation-record-user" type="select" className="form-control" name="user.id">
+                      <option value="" key="0" />
+                      {users
+                        ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.username}
                           </option>
                         ))
-                      : null}
-                  </AvInput>
-                </AvGroup>
-                <AvGroup>
-                  <Label for="reservation-record-item">Item</Label>
-                  <AvInput id="reservation-record-item" type="select" className="form-control" name="item.id">
-                    <option value="" key="0" />
-                    {items
-                      ? items.map(otherEntity => (
+                        : null}
+                    </AvInput> : <AvInput id="reservation-record-user" type="hidden" name="user.id" value={account.id} />}
+                  </AvGroup>
+                  <AvGroup>
+                    {!item && <Label for="reservation-record-item">Item</Label>}
+                    {!item ? <AvInput id="reservation-record-item" type="select" className="form-control" name="item.id">
+                      <option value="" key="0" />
+                      {items
+                        ? items.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.name}
                           </option>
                         ))
-                      : null}
-                  </AvInput>
-                </AvGroup>
-                <Button tag={Link} id="cancel-save" to="/entity/reservation-record" replace color="info">
-                  <FontAwesomeIcon icon="arrow-left" />
-                  &nbsp;
+                        : null}
+                    </AvInput> : <AvInput id="reservation-record-item" type="hidden" name="item.id" value={item} />}
+                  </AvGroup>
+                  <Button tag={Link} id="cancel-save" to="/entity/reservation-record" replace color="info">
+                    <FontAwesomeIcon icon="arrow-left" />
+                    &nbsp;
                   <span className="d-none d-md-inline">Back</span>
-                </Button>
-                &nbsp;
+                  </Button>
+                  &nbsp;
                 <Button color="primary" id="save-entity" type="submit" disabled={updating}>
-                  <FontAwesomeIcon icon="save" />
-                  &nbsp; Save
+                    <FontAwesomeIcon icon="save" />
+                    &nbsp; Save
                 </Button>
-              </AvForm>
-            )}
+                </AvForm>
+              )}
           </Col>
         </Row>
       </div>
@@ -173,6 +165,7 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
+  account: storeState.authentication.account,
   users: storeState.userManagement.users,
   items: storeState.item.entities,
   reservationRecordEntity: storeState.reservationRecord.entity,
@@ -182,6 +175,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
+  getUser,
   getUsers,
   getItems,
   getEntity,

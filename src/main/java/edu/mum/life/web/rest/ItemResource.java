@@ -1,6 +1,8 @@
 package edu.mum.life.web.rest;
 
 import edu.mum.life.domain.Item;
+import edu.mum.life.security.AuthoritiesConstants;
+import edu.mum.life.security.SecurityUtils;
 import edu.mum.life.service.ItemService;
 import edu.mum.life.web.rest.errors.BadRequestAlertException;
 
@@ -96,7 +98,15 @@ public class ItemResource {
     @GetMapping("/items")
     public ResponseEntity<List<Item>> getAllItems(Pageable pageable) {
         log.debug("REST request to get a page of Items");
-        Page<Item> page = itemService.findAll(pageable);
+
+        Page<Item> page;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) ||
+            SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.LENDER)) {
+            page = itemService.findAll(pageable);
+        } else {
+            page = itemService.findAllAvailable(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

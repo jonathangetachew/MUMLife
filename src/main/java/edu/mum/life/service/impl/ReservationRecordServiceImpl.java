@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -53,6 +54,18 @@ public class ReservationRecordServiceImpl implements ReservationRecordService {
         return reservationRecordRepository.findAll(pageable);
     }
 
+    /**
+     *
+     * Get all Reservation Records by Current User
+     *
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReservationRecord> findAllByCurrentUser() {
+        log.debug("Request to get all Reservation Records for Current User");
+        return reservationRecordRepository.findByUserIsCurrentUser();
+    }
 
     /**
      * Get one reservationRecord by id.

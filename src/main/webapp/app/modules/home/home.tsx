@@ -9,11 +9,12 @@ import { Row, Col, Alert } from 'reactstrap';
 import { IRootState } from './../../shared/reducers';
 import Metrics from './../administration/metrics/metrics';
 import Event from './../../entities/event';
+import Item from './../../entities/item';
 
 export type IHomeProp = StateProps;
 
 export const Home = (props: IHomeProp) => {
-  const { account } = props;
+  const { account, isAuthenticated } = props;
 
   return (
     <Row>
@@ -26,14 +27,18 @@ export const Home = (props: IHomeProp) => {
             { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
               <Metrics />
             ) :
-              account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
+              isAuthenticated && account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
                 <div>
                   <Event match={{url:""}} />
                 </div>
               ) : account.authorities.indexOf('ROLE_ORGANIZER') > -1 ? (
-                    <h1>I&apos;m an organizer</h1>
+                    <div>
+                      <Event match={{url:""}} />
+                    </div>
                   ) : account.authorities.indexOf('ROLE_LENDER') > -1 ? (
-                        <h1>I&apos;m a lender</h1>
+                        <div>
+                          <Item match={{url:""}} />
+                        </div>
                       ) : ''}
           </div>
         ) : (
