@@ -1,6 +1,5 @@
 import React from 'react';
-
-import Home from '../home/home';
+import { Redirect } from 'react-router-dom';
 
 import { connect } from 'react-redux';
 
@@ -27,7 +26,7 @@ export class Logout extends React.Component<ILogoutProps> {
     }
 
     return (
-      <Home />
+      <Redirect to={'/'} />
     );
   }
 }
