@@ -14,7 +14,7 @@ import ReservationRecordDeleteDialog from './reservation-record-delete-dialog';
 const Routes = ({ match }) => (
   <>
     <Switch>
-      <PrivateRoute exact path={`${match.url}/new`} component={ReservationRecordUpdate} hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.LENDER]} />
+      <PrivateRoute exact path={`${match.url}/new/:item`} component={ReservationRecordUpdate} hasAnyAuthorities={[AUTHORITIES.STUDENT, AUTHORITIES.LENDER]} />
       <PrivateRoute exact path={`${match.url}/:id/edit`} component={ReservationRecordUpdate} hasAnyAuthorities={[AUTHORITIES.ADMIN, AUTHORITIES.LENDER]} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id`} component={ReservationRecordDetail} />
       <ErrorBoundaryRoute path={match.url} component={ReservationRecord} />
