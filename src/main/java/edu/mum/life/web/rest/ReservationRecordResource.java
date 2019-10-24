@@ -77,11 +77,14 @@ public class ReservationRecordResource {
         }
 
         ReservationRecord result = reservationRecordService.save(reservationRecord);
+        try {
+            // Update the item status
+            Optional<Item> item = itemService.findOne(reservationRecord.getItem().getId());
+            item.get().setStatus(ItemStatus.RESERVED);
+            itemService.save(item.get());
+        } catch(Exception e) {
 
-        // Update the item status
-        Optional<Item> item = itemService.findOne(reservationRecord.getItem().getId());
-        item.get().setStatus(ItemStatus.RESERVED);
-        itemService.save(item.get());
+        }
 
         return ResponseEntity.created(new URI("/api/reservation-records/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
