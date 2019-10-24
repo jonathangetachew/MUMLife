@@ -1,5 +1,10 @@
 package edu.mum.life.web.rest;
 
+import edu.mum.life.domain.ReservationRecord;
+import edu.mum.life.security.AuthoritiesConstants;
+import edu.mum.life.security.SecurityUtils;
+import edu.mum.life.service.ReservationRecordService;
+import edu.mum.life.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -11,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +77,6 @@ public class ReservationRecordResource {
         }
 
         ReservationRecord result = reservationRecordService.save(reservationRecord);
-
         try {
             // Update the item status
             Optional<Item> item = itemService.findOne(reservationRecord.getItem().getId());
@@ -118,7 +123,21 @@ public class ReservationRecordResource {
     @GetMapping("/reservation-records")
     public ResponseEntity<List<ReservationRecord>> getAllReservationRecords(Pageable pageable) {
         log.debug("REST request to get a page of ReservationRecords");
-        Page<ReservationRecord> page = reservationRecordService.findAll(pageable);
+
+        Page<ReservationRecord> page;
+
+        ///> Check if current user has admin / lender role the return all results, otherwise, return limited results.
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) ||
+            SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.LENDER)) {
+            page = reservationRecordService.findAll(pageable);
+        } else {
+            List<ReservationRecord> reservations = reservationRecordService.findAllByCurrentUser();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), reservations.size());
+
+            page = new PageImpl<>(reservations.subList(start, end), pageable, reservations.size());
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
