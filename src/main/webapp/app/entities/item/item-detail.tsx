@@ -7,10 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './item.reducer';
-import { IItem } from 'app/shared/model/item.model';
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { hasAuthority } from 'app/shared/auth/private-route';
 
-export interface IItemDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
+export interface IItemDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> { }
 
 export class ItemDetail extends React.Component<IItemDetailProps> {
   componentDidMount() {
@@ -19,6 +19,8 @@ export class ItemDetail extends React.Component<IItemDetailProps> {
 
   render() {
     const { itemEntity } = this.props;
+    const isManager = hasAuthority([AUTHORITIES.ADMIN, AUTHORITIES.LENDER]);
+    const isStudent = hasAuthority([AUTHORITIES.STUDENT]);
     return (
       <Row>
         <Col md="8">
@@ -62,9 +64,13 @@ export class ItemDetail extends React.Component<IItemDetailProps> {
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
           </Button>
           &nbsp;
-          <Button tag={Link} to={`/entity/item/${itemEntity.id}/edit`} replace color="primary">
+          {isManager && <Button tag={Link} to={`/entity/item/${itemEntity.id}/edit`} replace color="primary">
             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-          </Button>
+          </Button>}
+          
+          {isStudent && <Button tag={Link} to={`/entity/reservation-record/new/${itemEntity.id}/`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Reserve</span>
+          </Button>}          
         </Col>
       </Row>
     );

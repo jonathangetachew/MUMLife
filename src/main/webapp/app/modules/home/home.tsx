@@ -13,7 +13,7 @@ import Event from './../../entities/event';
 export type IHomeProp = StateProps;
 
 export const Home = (props: IHomeProp) => {
-  const { account } = props;
+  const { account, isAuthenticated } = props;
 
   return (
     <Row>
@@ -26,7 +26,7 @@ export const Home = (props: IHomeProp) => {
             { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
               <Metrics />
             ) :
-              account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
+              isAuthenticated && account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
                 <div>
                   <Event match={{url:""}} />
                 </div>

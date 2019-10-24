@@ -2,8 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Route, Redirect, RouteProps } from 'react-router-dom';
 
+import {store} from 'app/index';
+
 import { IRootState } from 'app/shared/reducers';
 import ErrorBoundary from 'app/shared/error/error-boundary';
+
+
 
 interface IOwnProps extends RouteProps {
   hasAnyAuthorities?: string[];
@@ -61,6 +65,10 @@ export const hasAnyAuthority = (authorities: string[], hasAnyAuthorities: string
     return hasAnyAuthorities.some(auth => authorities.includes(auth));
   }
   return false;
+};
+
+export const hasAuthority = (hasAnyAuthorities: string[]) => {
+  return hasAnyAuthority(store.getState().authentication.account.authorities, hasAnyAuthorities);
 };
 
 const mapStateToProps = (
