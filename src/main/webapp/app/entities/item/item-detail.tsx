@@ -67,10 +67,10 @@ export class ItemDetail extends React.Component<IItemDetailProps> {
           {isManager && <Button tag={Link} to={`/entity/item/${itemEntity.id}/edit`} replace color="primary">
             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
           </Button>}
-          
-          {isStudent && <Button tag={Link} to={`/entity/reservation-record/new/${itemEntity.id}/`} replace color="primary">
+
+          {(isStudent || isManager) && <Button tag={Link} to={`/entity/reservation-record/new/${itemEntity.id}/`} replace color="primary">
             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Reserve</span>
-          </Button>}          
+          </Button>}
         </Col>
       </Row>
     );

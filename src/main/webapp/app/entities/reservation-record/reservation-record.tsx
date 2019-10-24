@@ -8,11 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities, reset } from './reservation-record.reducer';
-import { IReservationRecord } from 'app/shared/model/reservation-record.model';
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { hasAuthority } from 'app/shared/auth/private-route';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
 import { ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 
-export interface IReservationRecordProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
+export interface IReservationRecordProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> { }
 
 export type IReservationRecordState = IPaginationBaseState;
 
@@ -63,14 +63,17 @@ export class ReservationRecord extends React.Component<IReservationRecordProps, 
 
   render() {
     const { reservationRecordList, match } = this.props;
+
+    const isManager = hasAuthority([AUTHORITIES.ADMIN, AUTHORITIES.LENDER]);
+
     return (
       <div>
         <h2 id="reservation-record-heading">
           Reservation Records
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+          {isManager && <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Reservation Record
-          </Link>
+          </Link>}
         </h2>
         <div className="table-responsive">
           <InfiniteScroll
@@ -126,12 +129,12 @@ export class ReservationRecord extends React.Component<IReservationRecordProps, 
                           <Button tag={Link} to={`${match.url}/${reservationRecord.id}`} color="info" size="sm">
                             <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                           </Button>
-                          <Button tag={Link} to={`${match.url}/${reservationRecord.id}/edit`} color="primary" size="sm">
+                          {isManager && <Button tag={Link} to={`${match.url}/${reservationRecord.id}/edit`} color="primary" size="sm">
                             <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                          </Button>
-                          <Button tag={Link} to={`${match.url}/${reservationRecord.id}/delete`} color="danger" size="sm">
+                          </Button>}
+                          {isManager && <Button tag={Link} to={`${match.url}/${reservationRecord.id}/delete`} color="danger" size="sm">
                             <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                          </Button>
+                          </Button>}
                         </div>
                       </td>
                     </tr>
@@ -139,8 +142,8 @@ export class ReservationRecord extends React.Component<IReservationRecordProps, 
                 </tbody>
               </Table>
             ) : (
-              <div className="alert alert-warning">No Reservation Records found</div>
-            )}
+                <div className="alert alert-warning">No Reservation Records found</div>
+              )}
           </InfiniteScroll>
         </div>
       </div>

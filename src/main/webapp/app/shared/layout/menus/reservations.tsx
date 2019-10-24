@@ -7,5 +7,8 @@ export const ReservationsMenu = props => (
     <MenuItem icon="asterisk" to="/entity/item">
       Reserve item
     </MenuItem>
+    <MenuItem icon="asterisk" to="/entity/reservation-record">
+      View reservervations
+    </MenuItem>
   </NavDropdown>
 );

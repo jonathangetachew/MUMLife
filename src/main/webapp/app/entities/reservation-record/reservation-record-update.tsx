@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
 import { IUser } from 'app/shared/model/user.model';
-import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { getUsers, getUser } from 'app/modules/administration/user-management/user-management.reducer';
 import { IItem } from 'app/shared/model/item.model';
 import { getEntities as getItems } from 'app/entities/item/item.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './reservation-record.reducer';
@@ -76,9 +76,10 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
   };
 
   render() {
-    const { reservationRecordEntity, users, currentUser, items, loading, updating, match } = this.props;
+    const { reservationRecordEntity, users, account, items, loading, updating, match } = this.props;
     const { isNew } = this.state;
     const { item } = match && match.params ? match.params : undefined;
+    const isManager = hasAuthority([AUTHORITIES.ADMIN, AUTHORITIES.LENDER]);
 
     return (
       <div>
@@ -119,8 +120,8 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
                     <AvInput id="reservation-record-createdAt" type="hidden" name="createdAt" value={isNew ? convertDateTimeFromServer(moment.now()) : convertDateTimeFromServer(this.props.reservationRecordEntity.createdAt)} />
                   </AvGroup>
                   <AvGroup>
-                     {!item && <Label for="reservation-record-user">User</Label>}
-                    {!item ? <AvInput id="reservation-record-user" type="select" className="form-control" name="user.id">
+                    {!item && <Label for="reservation-record-user">User</Label>}
+                    {(!item || isManager )? <AvInput id="reservation-record-user" type="select" className="form-control" name="user.id">
                       <option value="" key="0" />
                       {users
                         ? users.map(otherEntity => (
@@ -129,7 +130,7 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
                           </option>
                         ))
                         : null}
-                    </AvInput> : <AvInput id="reservation-record-user" type="hidden" name="user.id" value={currentUser.id} />}
+                    </AvInput> : <AvInput id="reservation-record-user" type="hidden" name="user.id" value={account.id} />}
                   </AvGroup>
                   <AvGroup>
                     {!item && <Label for="reservation-record-item">Item</Label>}
@@ -164,8 +165,8 @@ export class ReservationRecordUpdate extends React.Component<IReservationRecordU
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
+  account: storeState.authentication.account,
   users: storeState.userManagement.users,
-  currentUser: storeState.userManagement.user,
   items: storeState.item.entities,
   reservationRecordEntity: storeState.reservationRecord.entity,
   loading: storeState.reservationRecord.loading,
@@ -174,6 +175,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
+  getUser,
   getUsers,
   getItems,
   getEntity,
