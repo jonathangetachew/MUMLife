@@ -63,13 +63,13 @@ export class Item extends React.Component<IItemProps, IItemState> {
 
   render() {
     const { itemList, match, totalItems, itemTypes } = this.props;
-    const list = itemList.filter(item => (this.state.type.toString() === "0" || (item.type && this.state.type.toString() === item.type.id.toString())));    
+    const list = itemList.filter(item => (this.state.type.toString() === "0" || (item.type && this.state.type.toString() === item.type.id.toString())));
     const isManager = hasAuthority([AUTHORITIES.ADMIN, AUTHORITIES.LENDER]);
     return (
       <div>
         <h2 id="item-heading">
           Items
-          {isManager && <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+          {isManager && <Link to={`/entity/item/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Item
           </Link>}
@@ -118,7 +118,7 @@ export class Item extends React.Component<IItemProps, IItemState> {
                 {list.map((item, i) => (
                   <tr key={`entity-${i}`}>
                     <td>
-                      <Button tag={Link} to={`${match.url}/${item.id}`} color="link" size="sm">
+                      <Button tag={Link} to={`/entity/item/${item.id}`} color="link" size="sm">
                         {item.id}
                       </Button>
                     </td>
@@ -141,13 +141,13 @@ export class Item extends React.Component<IItemProps, IItemState> {
                     <td>{item.type ? <Link to={`item-type/${item.type.id}`}>{item.type.name}</Link> : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`${match.url}/${item.id}`} color="info" size="sm">
+                        <Button tag={Link} to={`/entity/item/${item.id}`} color="info" size="sm">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                         </Button>
-                        {isManager && <Button tag={Link} to={`${match.url}/${item.id}/edit`} color="primary" size="sm">
+                        {isManager && <Button tag={Link} to={`/entity/item/${item.id}/edit`} color="primary" size="sm">
                           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                         </Button>}
-                        {isManager && <Button tag={Link} to={`${match.url}/${item.id}/delete`} color="danger" size="sm">
+                        {isManager && <Button tag={Link} to={`/entity/item/${item.id}/delete`} color="danger" size="sm">
                           <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
                         </Button>}
                       </div>
