@@ -172,7 +172,7 @@ describe('Administration reducer tests', () => {
 
     it('should update state according to a successful fetch audits request', () => {
       const headers = { ['x-total-count']: 1 };
-      const payload = { data: [{ id: 1, userLogin: 'admin' }], headers };
+      const payload = { data: [{ id: 1, userUsername: 'admin' }], headers };
       const toTest = administration(undefined, { type: SUCCESS(ACTION_TYPES.FETCH_AUDITS), payload });
 
       expect(toTest).toMatchObject({

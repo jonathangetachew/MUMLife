@@ -6,84 +6,71 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Row, Col, Alert } from 'reactstrap';
 
-import { IRootState } from 'app/shared/reducers';
+import { IRootState } from './../../shared/reducers';
+import Metrics from './../administration/metrics/metrics';
+import Event from './../../entities/event';
+import Item from './../../entities/item';
 
 export type IHomeProp = StateProps;
 
 export const Home = (props: IHomeProp) => {
-  const { account } = props;
+  const { account, isAuthenticated } = props;
 
   return (
     <Row>
-      <Col md="9">
-        <h2>Welcome, Java Hipster!</h2>
-        <p className="lead">This is your homepage</p>
-        {account && account.login ? (
+      <Col md="10" style={{ margin: '0 auto'}}>
+        {account && account.username ? (
           <div>
-            <Alert color="success">You are logged in as user {account.login}.</Alert>
+            <div style={{ textAlign: 'right' }}>
+              <Alert color="info">Welcom, {account.username}.</Alert>
+            </div>
+            { account.authorities.indexOf('ROLE_ADMIN') > -1 ? (
+              <Metrics />
+            ) :
+              isAuthenticated && account.authorities.indexOf('ROLE_STUDENT') > -1 ? (
+                <div>
+                  <Event match={{url:""}} />
+                </div>
+              ) : account.authorities.indexOf('ROLE_ORGANIZER') > -1 ? (
+                    <div>
+                      <Event match={{url:""}} />
+                    </div>
+                  ) : account.authorities.indexOf('ROLE_LENDER') > -1 ? (
+                        <div>
+                          <Item match={{url:""}} />
+                        </div>
+                      ) : ''}
           </div>
         ) : (
           <div>
-            <Alert color="warning">
+            <h2>Welcome to MUM Life!</h2>
+            <p className="lead">A Platform to Discover Events and Rent Items in Maharishi University of Management.</p>
+            <Alert color="info">
               If you want to
               <Link to="/login" className="alert-link">
                 {' '}
                 sign in
               </Link>
               , you can try the default accounts:
-              <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;)
-              <br />- User (login=&quot;user&quot; and password=&quot;user&quot;).
+              <br />- Administrator (username=&quot;admin&quot; and password=&quot;admin&quot;)
+              <br />- Student (username=&quot;student&quot; and password=&quot;user&quot;)
+              <br />- Organizer (username=&quot;organizer&quot; and password=&quot;user&quot;)
+              <br />- Lender (username=&quot;lender&quot; and password=&quot;user&quot;).
             </Alert>
 
-            <Alert color="warning">
+            <Alert color="info">
               You do not have an account yet?&nbsp;
               <Link to="/account/register" className="alert-link">
                 Register a new account
               </Link>
             </Alert>
+
           </div>
         )}
-        <p>If you have any question on JHipster:</p>
-
-        <ul>
-          <li>
-            <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">
-              JHipster homepage
-            </a>
-          </li>
-          <li>
-            <a href="http://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">
-              JHipster on Stack Overflow
-            </a>
-          </li>
-          <li>
-            <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer">
-              JHipster bug tracker
-            </a>
-          </li>
-          <li>
-            <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-              JHipster public chat room
-            </a>
-          </li>
-          <li>
-            <a href="https://twitter.com/java_hipster" target="_blank" rel="noopener noreferrer">
-              follow @java_hipster on Twitter
-            </a>
-          </li>
-        </ul>
-
-        <p>
-          If you like JHipster, do not forget to give us a star on{' '}
-          <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-            Github
-          </a>
-          !
-        </p>
       </Col>
-      <Col md="3" className="pad">
+      {/* <Col md="3" className="pad">
         <span className="hipster rounded" />
-      </Col>
+      </Col> */}
     </Row>
   );
 };

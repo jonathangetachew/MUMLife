@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = MumLifeApp.class)
 public class UserMapperIT {
 
-    private static final String DEFAULT_LOGIN = "johndoe";
+    private static final String DEFAULT_USERNAME = "johndoe";
     private static final Long DEFAULT_ID = 1L;
 
     @Autowired
@@ -35,7 +35,7 @@ public class UserMapperIT {
     @BeforeEach
     public void init() {
         user = new User();
-        user.setLogin(DEFAULT_LOGIN);
+        user.setUsername(DEFAULT_USERNAME);
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
         user.setEmail("johndoe@localhost");

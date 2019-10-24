@@ -51,8 +51,10 @@ Navbar styles
     height: 35px;
     width: auto;
     display: inline-block;
+    margin: 0 10px;
     img {
-      height: 45px;
+      color: $header-color;
+      height: 30px;
     }
   }
 }
@@ -61,7 +63,7 @@ Navbar styles
   font-size: 24px;
   color: $header-color;
   &:hover {
-    color: $header-color-hover;
+    // color: $header-color-hover;
     text-decoration: none;
   }
 }
