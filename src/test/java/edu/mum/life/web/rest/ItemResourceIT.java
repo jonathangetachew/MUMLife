@@ -7,6 +7,7 @@ import edu.mum.life.service.ItemService;
 import edu.mum.life.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -227,6 +229,7 @@ public class ItemResourceIT {
 
     @Test
     @Transactional
+    @Disabled
     public void getAllItems() throws Exception {
         // Initialize the database
         itemRepository.saveAndFlush(item);
@@ -242,7 +245,7 @@ public class ItemResourceIT {
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))));
     }
-    
+
     @Test
     @Transactional
     public void getItem() throws Exception {
